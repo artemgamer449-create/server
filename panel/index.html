@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="ru" class="dark">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>VisionGram Badge Studio</title>
+	<script>
+		(function () {
+			var theme = 'dark';
+			try {
+				theme = localStorage.getItem('visiongram.theme') || 'dark';
+			} catch (error) {}
+			document.documentElement.classList.toggle('dark', theme !== 'light');
+		})();
+	</script>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			darkMode: 'class',
+			theme: {
+				extend: {
+					colors: {
+						border: 'hsl(var(--border))',
+						input: 'hsl(var(--input))',
+						ring: 'hsl(var(--ring))',
+						background: 'hsl(var(--background))',
+						foreground: 'hsl(var(--foreground))',
+						primary: {
+							DEFAULT: 'hsl(var(--primary))',
+							foreground: 'hsl(var(--primary-foreground))',
+						},
+						secondary: {
+							DEFAULT: 'hsl(var(--secondary))',
+							foreground: 'hsl(var(--secondary-foreground))',
+						},
+						destructive: {
+							DEFAULT: 'hsl(var(--destructive))',
+							foreground: 'hsl(var(--destructive-foreground))',
+						},
+						muted: {
+							DEFAULT: 'hsl(var(--muted))',
+							foreground: 'hsl(var(--muted-foreground))',
+						},
+						accent: {
+							DEFAULT: 'hsl(var(--accent))',
+							foreground: 'hsl(var(--accent-foreground))',
+						},
+						popover: {
+							DEFAULT: 'hsl(var(--popover))',
+							foreground: 'hsl(var(--popover-foreground))',
+						},
+						card: {
+							DEFAULT: 'hsl(var(--card))',
+							foreground: 'hsl(var(--card-foreground))',
+						},
+					},
+					borderRadius: {
+						lg: 'var(--radius)',
+						md: 'calc(var(--radius) - 2px)',
+						sm: 'calc(var(--radius) - 4px)',
+					},
+					fontFamily: {
+						sans: ['Inter', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'sans-serif'],
+					},
+				},
+			},
+		};
+	</script>
+	<style>
+		:root {
+			color-scheme: light;
+			--background: 0 0% 100%;
+			--foreground: 240 10% 3.9%;
+			--card: 0 0% 100%;
+			--card-foreground: 240 10% 3.9%;
+			--popover: 0 0% 100%;
+			--popover-foreground: 240 10% 3.9%;
+			--primary: 262.1 83.3% 57.8%;
+			--primary-foreground: 210 20% 98%;
+			--secondary: 240 4.8% 95.9%;
+			--secondary-foreground: 240 5.9% 10%;
+			--muted: 240 4.8% 95.9%;
+			--muted-foreground: 240 3.8% 46.1%;
+			--accent: 240 4.8% 95.9%;
+			--accent-foreground: 240 5.9% 10%;
+			--destructive: 0 84.2% 60.2%;
+			--destructive-foreground: 0 0% 98%;
+			--border: 240 5.9% 90%;
+			--input: 240 5.9% 90%;
+			--ring: 262.1 83.3% 57.8%;
+			--radius: 0.75rem;
+		}
+
+		.dark {
+			color-scheme: dark;
+			--background: 240 10% 3.9%;
+			--foreground: 0 0% 98%;
+			--card: 240 10% 5.9%;
+			--card-foreground: 0 0% 98%;
+			--popover: 240 10% 3.9%;
+			--popover-foreground: 0 0% 98%;
+			--primary: 263.4 70% 50.4%;
+			--primary-foreground: 210 20% 98%;
+			--secondary: 240 3.7% 15.9%;
+			--secondary-foreground: 0 0% 98%;
+			--muted: 240 3.7% 15.9%;
+			--muted-foreground: 240 5% 64.9%;
+			--accent: 240 3.7% 15.9%;
+			--accent-foreground: 0 0% 98%;
+			--destructive: 0 62.8% 30.6%;
+			--destructive-foreground: 0 0% 98%;
+			--border: 240 3.7% 15.9%;
+			--input: 240 3.7% 15.9%;
+			--ring: 263.4 70% 50.4%;
+		}
+
+		html {
+			scroll-behavior: smooth;
+		}
+
+		body {
+			font-feature-settings: "rlig" 1, "calt" 1;
+		}
+
+		.badge-chip {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4rem;
+			max-width: 100%;
+			padding: 0.38rem 0.72rem;
+			border: 1px solid transparent;
+			border-radius: 9999px;
+			font-size: 0.68rem;
+			font-weight: 800;
+			letter-spacing: 0.08em;
+			line-height: 1;
+			text-transform: uppercase;
+			white-space: nowrap;
+			transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		.badge-chip .badge-icon {
+			display: inline-flex;
+			width: 1rem;
+			height: 1rem;
+			align-items: center;
+			justify-content: center;
+			flex: none;
+		}
+
+		.badge-chip .badge-icon svg {
+			width: 100%;
+			height: 100%;
+		}
+
+		.toast-enter {
+			animation: toast-in 0.22s ease-out;
+		}
+
+		@keyframes toast-in {
+			from {
+				opacity: 0;
+				transform: translateY(8px) scale(0.98);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0) scale(1);
+			}
+		}
+
+		.list-scroll::-webkit-scrollbar {
+			height: 8px;
+		}
+
+		.list-scroll::-webkit-scrollbar-track {
+			background: transparent;
+		}
+
+		.list-scroll::-webkit-scrollbar-thumb {
+			border-radius: 9999px;
+			background: hsl(var(--border));
+		}
+
+		input[type="color"]::-webkit-color-swatch-wrapper {
+			padding: 0;
+		}
+
+		input[type="color"]::-webkit-color-swatch {
+			border: 0;
+			border-radius: calc(var(--radius) - 4px);
+		}
+	</style>
+	<style type="text/tailwindcss">
+		@layer base {
+			* {
+				@apply border-border;
+			}
+
+			body {
+				@apply bg-background text-foreground antialiased;
+			}
+		}
+
+		@layer components {
+			.card-shad {
+				@apply rounded-xl border bg-card text-card-foreground shadow-sm;
+			}
+
+			.btn {
+				@apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50;
+			}
+
+			.btn-primary {
+				@apply h-10 bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90;
+			}
+
+			.btn-secondary {
+				@apply h-10 bg-secondary px-4 py-2 text-secondary-foreground hover:bg-secondary/80;
+			}
+
+			.btn-ghost {
+				@apply h-10 px-4 py-2 hover:bg-accent hover:text-accent-foreground;
+			}
+
+			.btn-outline {
+				@apply h-10 border border-input bg-background px-4 py-2 hover:bg-accent hover:text-accent-foreground;
+			}
+
+			.btn-destructive {
+				@apply h-10 bg-destructive px-4 py-2 text-destructive-foreground hover:bg-destructive/90;
+			}
+
+			.btn-icon {
+				@apply h-9 w-9 p-0;
+			}
+
+			.input-shad {
+				@apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+			}
+
+			.textarea-shad {
+				@apply flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+			}
+
+			.select-shad {
+				@apply flex h-10 w-full cursor-pointer appearance-none rounded-md border border-input bg-background px-3 py-2 pr-9 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+			}
+
+			.label-shad {
+				@apply text-sm font-medium leading-none;
+			}
+
+			.table-shad {
+				@apply w-full caption-bottom text-sm;
+			}
+
+			.table-shad th {
+				@apply h-11 px-4 text-left align-middle text-xs font-medium uppercase tracking-wider text-muted-foreground;
+			}
+
+			.table-shad td {
+				@apply px-4 py-3 align-middle;
+			}
+		}
+	</style>
+</head>
+<body class="min-h-screen">
+	<div class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_15%_0%,hsl(var(--primary)/0.16),transparent_32%),radial-gradient(circle_at_90%_0%,rgba(34,211,238,0.1),transparent_28%)]"></div>
+
+	<header class="sticky top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+		<div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+			<div class="flex items-center gap-3">
+				<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 text-xs font-extrabold tracking-wider text-black shadow-lg shadow-violet-500/25">VG</div>
+				<div class="leading-tight">
+					<div class="text-sm font-semibold">VisionGram</div>
+					<div class="text-xs text-muted-foreground">Badge Studio</div>
+				</div>
+			</div>
+			<div class="flex items-center gap-3">
+				<div id="apiState" class="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-xs text-muted-foreground">
+					<span id="apiDot" class="h-2 w-2 rounded-full bg-muted-foreground"></span>
+					<span id="apiLabel">Проверка API</span>
+				</div>
+				<button id="themeToggle" type="button" class="btn btn-outline btn-icon" aria-label="Переключить тему" title="Переключить тему">
+					<svg class="h-4 w-4 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<circle cx="12" cy="12" r="4"></circle>
+						<path d="M12 2v2"></path>
+						<path d="M12 20v2"></path>
+						<path d="m4.93 4.93 1.41 1.41"></path>
+						<path d="m17.66 17.66 1.41 1.41"></path>
+						<path d="M2 12h2"></path>
+						<path d="M20 12h2"></path>
+						<path d="m6.34 17.66-1.41 1.41"></path>
+						<path d="m19.07 4.93-1.41 1.41"></path>
+					</svg>
+					<svg class="hidden h-4 w-4 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+					</svg>
+				</button>
+			</div>
+		</div>
+	</header>
+
+	<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+		<div class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+			<div>
+				<h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">Бейджи профиля</h1>
+				<p class="mt-2 max-w-2xl text-sm text-muted-foreground">Выдавайте роли, настраивайте цвета и иконки. Клиент VisionGram забирает бейджи с этого API автоматически.</p>
+			</div>
+			<button id="resetBtn" type="button" class="btn btn-outline self-start sm:self-auto">Новый бейдж</button>
+		</div>
+
+		<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+			<section class="card-shad p-6">
+				<div class="mb-6">
+					<h2 class="text-lg font-semibold tracking-tight">Редактор</h2>
+					<p class="mt-1 text-sm text-muted-foreground">Все поля применяются к бейджу при сохранении.</p>
+				</div>
+
+				<form id="badgeForm" class="grid gap-5" autocomplete="off">
+					<div class="grid gap-4 sm:grid-cols-2">
+						<div class="grid gap-2">
+							<label class="label-shad" for="telegramId">Telegram ID</label>
+							<input id="telegramId" class="input-shad" inputmode="numeric" pattern="[0-9]*" placeholder="123456789" required>
+						</div>
+						<div class="grid gap-2">
+							<label class="label-shad" for="username">Username</label>
+							<input id="username" class="input-shad" placeholder="username">
+						</div>
+					</div>
+
+					<div class="grid gap-2">
+						<label class="label-shad" for="displayName">Отображаемое имя</label>
+						<input id="displayName" class="input-shad" placeholder="Имя в Telegram">
+					</div>
+
+					<div class="grid gap-4 sm:grid-cols-2">
+						<div class="grid gap-2">
+							<label class="label-shad" for="role">Роль</label>
+							<div class="relative">
+								<select id="role" class="select-shad">
+									<option value="owner">Владелец</option>
+									<option value="coder">Разработчик</option>
+									<option value="admin">Администратор</option>
+									<option value="tester">Тестировщик</option>
+								</select>
+								<svg class="pointer-events-none absolute right-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<path d="m6 9 6 6 6-6"></path>
+								</svg>
+							</div>
+						</div>
+						<div class="grid gap-2">
+							<label class="label-shad" for="icon">Иконка</label>
+							<div class="relative">
+								<select id="icon" class="select-shad">
+									<option value="auto">Авто (по роли)</option>
+									<option value="owner">Корона</option>
+									<option value="coder">Код</option>
+									<option value="admin">Щит</option>
+									<option value="tester">Колба</option>
+									<option value="check">Галочка</option>
+								</select>
+								<svg class="pointer-events-none absolute right-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<path d="m6 9 6 6 6-6"></path>
+								</svg>
+							</div>
+						</div>
+					</div>
+
+					<div class="grid gap-4 sm:grid-cols-2">
+						<div class="grid gap-2">
+							<label class="label-shad" for="label">Метка</label>
+							<input id="label" class="input-shad" maxlength="18" placeholder="OWNER">
+						</div>
+						<div class="grid gap-2">
+							<label class="label-shad" for="title">Заголовок</label>
+							<input id="title" class="input-shad" placeholder="Владелец">
+						</div>
+					</div>
+
+					<div class="grid gap-2">
+						<label class="label-shad" for="tagline">Подпись</label>
+						<input id="tagline" class="input-shad" placeholder="Короткая строка о роли">
+					</div>
+
+					<div class="grid gap-2">
+						<label class="label-shad" for="description">Описание</label>
+						<textarea id="description" class="textarea-shad" rows="3" placeholder="Подробное описание роли"></textarea>
+					</div>
+
+					<div class="grid gap-2">
+						<label class="label-shad" for="perks">Привилегии</label>
+						<textarea id="perks" class="textarea-shad" rows="3" placeholder="Одна привилегия на строку"></textarea>
+					</div>
+
+					<div class="rounded-xl border bg-muted/20 p-4">
+						<div class="mb-4 flex items-center justify-between gap-3">
+							<div>
+								<div class="text-sm font-medium">Цвета</div>
+								<div class="mt-1 text-xs text-muted-foreground">Палитра заливки, обводки и текста.</div>
+							</div>
+							<div id="previewPalette" class="flex items-center gap-1.5"></div>
+						</div>
+						<div class="grid gap-4 sm:grid-cols-3">
+							<div class="grid gap-2">
+								<label class="label-shad" for="fill">Заливка</label>
+								<div class="relative">
+									<select id="fill" class="select-shad">
+										<option value="neon-blue">neon-blue</option>
+										<option value="violet">violet</option>
+										<option value="gold">gold</option>
+										<option value="fire">fire</option>
+										<option value="emerald">emerald</option>
+										<option value="pink">pink</option>
+										<option value="platinum">platinum</option>
+										<option value="teal">teal</option>
+									</select>
+									<svg class="pointer-events-none absolute right-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="m6 9 6 6 6-6"></path>
+									</svg>
+								</div>
+							</div>
+							<div class="grid gap-2">
+								<label class="label-shad" for="outline">Обводка</label>
+								<div class="relative">
+									<select id="outline" class="select-shad">
+										<option value="none">none</option>
+										<option value="neon-blue">neon-blue</option>
+										<option value="violet">violet</option>
+										<option value="gold">gold</option>
+										<option value="fire">fire</option>
+										<option value="emerald">emerald</option>
+										<option value="pink">pink</option>
+										<option value="platinum">platinum</option>
+										<option value="teal">teal</option>
+									</select>
+									<svg class="pointer-events-none absolute right-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="m6 9 6 6 6-6"></path>
+									</svg>
+								</div>
+							</div>
+							<div class="grid gap-2">
+								<label class="label-shad" for="textColor">Цвет текста</label>
+								<input id="textColor" type="color" class="h-10 w-full cursor-pointer rounded-md border border-input bg-background p-1" value="#f7eeff">
+							</div>
+						</div>
+					</div>
+
+					<label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border bg-background p-4 transition-colors hover:bg-accent/40">
+						<span>
+							<span class="block text-sm font-medium">Свечение</span>
+							<span class="mt-0.5 block text-xs text-muted-foreground">Мягкая подсветка вокруг бейджа.</span>
+						</span>
+						<span class="relative inline-flex">
+							<input id="glow" type="checkbox" class="peer sr-only">
+							<span class="relative h-6 w-11 rounded-full bg-input transition-colors peer-checked:bg-primary after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform after:content-[''] peer-checked:after:translate-x-5"></span>
+						</span>
+					</label>
+
+					<div class="flex flex-wrap items-center gap-3 pt-1">
+						<button id="saveBtn" type="submit" class="btn btn-primary min-w-[170px]">
+							<svg id="saveSpinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z"></path>
+							</svg>
+							<span id="saveText">Сохранить бейдж</span>
+						</button>
+						<button id="deleteBtn" type="button" class="btn btn-destructive" disabled>Удалить</button>
+						<span class="text-xs text-muted-foreground">ID обязателен, остальное можно оставить пустым.</span>
+					</div>
+				</form>
+			</section>
+
+			<aside class="space-y-6 lg:sticky lg:top-24">
+				<section class="card-shad p-6">
+					<div class="flex items-start justify-between gap-4">
+						<div>
+							<h2 class="text-lg font-semibold tracking-tight">Предпросмотр</h2>
+							<p class="mt-1 text-sm text-muted-foreground">Так бейдж будет выглядеть в профиле.</p>
+						</div>
+						<span id="previewRole" class="rounded-full border bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">Владелец</span>
+					</div>
+
+					<div class="mt-6 flex min-h-[160px] items-center justify-center rounded-xl border border-dashed bg-muted/20 p-6">
+						<div id="badgePreview" class="badge-chip">
+							<span id="previewLabel">OWNER</span>
+							<span id="previewIcon" class="badge-icon"></span>
+						</div>
+					</div>
+
+					<div class="mt-6">
+						<h3 id="previewTitle" class="text-xl font-semibold tracking-tight">Владелец</h3>
+						<p id="previewTagline" class="mt-1 text-sm text-muted-foreground">Владелец проекта и хранитель приватных сборок</p>
+						<p id="previewDescription" class="mt-3 text-sm text-muted-foreground">Задаёт направление развития проекта и отвечает за релизный цикл.</p>
+						<ul id="previewPerks" class="mt-4 grid gap-2 text-sm text-muted-foreground"></ul>
+					</div>
+				</section>
+
+				<section class="card-shad p-6">
+					<h2 class="text-sm font-semibold">Как это работает</h2>
+					<div class="mt-4 grid gap-4 text-sm text-muted-foreground">
+						<div class="flex gap-3">
+							<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">1</span>
+							<span>Укажите Telegram ID пользователя.</span>
+						</div>
+						<div class="flex gap-3">
+							<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">2</span>
+							<span>Настройте роль, иконку и цвета.</span>
+						</div>
+						<div class="flex gap-3">
+							<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">3</span>
+							<span>Сохраните — клиент обновит бейдж в течение двух минут.</span>
+						</div>
+					</div>
+				</section>
+			</aside>
+		</div>
+
+		<section class="card-shad mt-6 overflow-hidden">
+			<div class="flex flex-col justify-between gap-4 border-b p-6 sm:flex-row sm:items-center">
+				<div>
+					<h2 class="text-lg font-semibold tracking-tight">Активные бейджи</h2>
+					<p class="mt-1 text-sm text-muted-foreground">Список сохранённых бейджей в базе.</p>
+				</div>
+				<div class="flex flex-col gap-2 sm:flex-row">
+					<div class="relative">
+						<svg class="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<circle cx="11" cy="11" r="8"></circle>
+							<path d="m21 21-4.3-4.3"></path>
+						</svg>
+						<input id="search" class="input-shad w-full pl-9 sm:w-64" placeholder="Поиск по ID, username, имени">
+					</div>
+					<button id="refreshBtn" type="button" class="btn btn-outline">
+						<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+							<path d="M21 3v6h-6"></path>
+						</svg>
+						Обновить
+					</button>
+				</div>
+			</div>
+
+			<div class="border-b bg-muted/10 p-6">
+				<div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+					<div class="grid flex-1 gap-2">
+						<label class="label-shad" for="adminToken">Admin token</label>
+						<input id="adminToken" type="password" class="input-shad" placeholder="Нужен только если на сервере задан BADGE_ADMIN_TOKEN">
+					</div>
+					<button id="saveTokenBtn" type="button" class="btn btn-secondary">Запомнить</button>
+				</div>
+				<p class="mt-2 text-xs text-muted-foreground">Токен хранится только в localStorage этого браузера.</p>
+			</div>
+
+			<div id="listStatus" class="border-b px-6 py-3 text-sm text-muted-foreground" role="status">Загрузка бейджей...</div>
+
+			<div class="list-scroll overflow-x-auto">
+				<table class="table-shad">
+					<thead class="border-b bg-muted/30">
+						<tr>
+							<th>Бейдж</th>
+							<th>Пользователь</th>
+							<th>Telegram ID</th>
+							<th>Роль</th>
+							<th class="text-right">Действия</th>
+						</tr>
+					</thead>
+					<tbody id="badgeBody"></tbody>
+				</table>
+				<div id="emptyState" class="hidden p-10 text-center">
+					<div class="text-sm font-medium">Пока нет бейджей</div>
+					<div class="mt-1 text-sm text-muted-foreground">Создайте первый бейдж в редакторе выше.</div>
+				</div>
+			</div>
+		</section>
+
+		<footer class="mt-8 flex flex-col justify-between gap-2 text-xs text-muted-foreground sm:flex-row">
+			<span>VisionGram Badge Studio</span>
+			<span>API: <code id="apiBase" class="rounded bg-muted px-1.5 py-0.5"></code></span>
+		</footer>
+	</main>
+
+	<div id="toasts" class="pointer-events-none fixed bottom-4 right-4 z-50 flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2"></div>
+
+	<script>
+		const PALETTES = {
+			'neon-blue': { a: '#35e6ff', b: '#2563eb', fg: '#eaf9ff' },
+			violet: { a: '#c084fc', b: '#6d28d9', fg: '#f7eeff' },
+			gold: { a: '#ffe9a3', b: '#b8860b', fg: '#2a1c00' },
+			fire: { a: '#ff9a6b', b: '#c81d25', fg: '#fff2ec' },
+			emerald: { a: '#6cf7c1', b: '#047857', fg: '#e9fff8' },
+			pink: { a: '#ffa6e6', b: '#d6336c', fg: '#fff0fa' },
+			platinum: { a: '#f7faff', b: '#93a4c8', fg: '#0d1424' },
+			teal: { a: '#8dfff3', b: '#0f766e', fg: '#e9fffb' },
+		};
+
+		const ROLE_PRESETS = {
+			owner: {
+				label: 'ᴏᴡɴᴇʀ',
+				title: 'Владелец',
+				tagline: 'Владелец проекта и хранитель приватных сборок',
+				description: 'Задаёт направление развития проекта и отвечает за релизный цикл.',
+				fill: 'violet',
+				outline: 'gold',
+				textColor: '#f7eeff',
+				glow: true,
+			},
+			coder: {
+				label: 'ᴄᴏᴅᴇʀ',
+				title: 'Разработчик',
+				tagline: 'Разработчик кастомного функционала и ядра клиента',
+				description: 'Пишет и ревьюит код клиента, отвечает за стабильность фич.',
+				fill: 'emerald',
+				outline: 'neon-blue',
+				textColor: '#e9fff8',
+				glow: true,
+			},
+			admin: {
+				label: 'ᴀᴅᴍɪɴ',
+				title: 'Администратор',
+				tagline: 'Администратор сообщества и модератор',
+				description: 'Следит за порядком в чатах и каналах, помогает пользователям.',
+				fill: 'fire',
+				outline: 'gold',
+				textColor: '#fff2ec',
+				glow: true,
+			},
+			tester: {
+				label: 'ᴛᴇꜱᴛᴇʀ',
+				title: 'Тестировщик',
+				tagline: 'Участник закрытого тестирования сборки',
+				description: 'Проверяет новые сборки до публичного релиза.',
+				fill: 'neon-blue',
+				outline: 'teal',
+				textColor: '#eaf9ff',
+				glow: true,
+			},
+		};
+
+		const ROLE_LABELS = {
+			owner: 'Владелец',
+			coder: 'Разработчик',
+			admin: 'Администратор',
+			tester: 'Тестировщик',
+		};
+
+		const ICON_PATHS = {
+			owner: '<path d="M3 7l4 4 5-7 5 7 4-4v11H3V7z"/><path d="M3 21h18"/>',
+			coder: '<path d="m8 9-4 3 4 3"/><path d="m16 9 4 3-4 3"/><path d="m14 5-4 14"/>',
+			admin: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+			tester: '<path d="M9 3h6"/><path d="M10 3v5l-5 10a3 3 0 0 0 2.7 4.3h8.6A3 3 0 0 0 19 18L14 8V3"/><path d="M8 14h8"/>',
+			check: '<path d="m5 12 4 4L19 6"/>',
+		};
+
+		const TOKEN_KEY = 'visiongram.badgeAdminToken';
+		const API_KEY = 'visiongram.apiBase';
+		const THEME_KEY = 'visiongram.theme';
+
+		const $ = (id) => document.getElementById(id);
+
+		function defaultApiBase() {
+			if (!location.protocol.startsWith('http')) {
+				return 'https://sayhost.online';
+			}
+			return location.origin;
+		}
+
+		const queryApi = new URLSearchParams(location.search).get('api');
+		let storedApi = null;
+		let storedToken = null;
+		let storedTheme = null;
+		try {
+			storedApi = localStorage.getItem(API_KEY);
+			storedToken = localStorage.getItem(TOKEN_KEY);
+			storedTheme = localStorage.getItem(THEME_KEY);
+		} catch (error) {}
+		const API_BASE = (queryApi || storedApi || defaultApiBase()).replace(/\/+$/, '');
+
+		const form = $('badgeForm');
+		const badgeBody = $('badgeBody');
+		const emptyState = $('emptyState');
+		const listStatus = $('listStatus');
+		const adminToken = $('adminToken');
+		const deleteBtn = $('deleteBtn');
+		const search = $('search');
+		let selectedId = null;
+		let searchTimer = 0;
+
+		function readForm() {
+			const icon = $('icon').value;
+			return {
+				telegram_id: Number($('telegramId').value.trim()),
+				username: $('username').value.trim(),
+				display_name: $('displayName').value.trim(),
+				role: $('role').value,
+				icon: icon === 'auto' ? '' : icon,
+				label: $('label').value.trim(),
+				fill: $('fill').value,
+				outline: $('outline').value,
+				text_color: $('textColor').value.trim(),
+				glow: $('glow').checked,
+				title: $('title').value.trim(),
+				tagline: $('tagline').value.trim(),
+				description: $('description').value.trim(),
+				perks: $('perks').value.split('\n').map((line) => line.trim()).filter(Boolean),
+			};
+		}
+
+		function applyPreset(role) {
+			const preset = ROLE_PRESETS[role] || ROLE_PRESETS.coder;
+			$('label').value = preset.label;
+			$('title').value = preset.title;
+			$('tagline').value = preset.tagline;
+			$('description').value = preset.description;
+			$('fill').value = preset.fill;
+			$('outline').value = preset.outline;
+			$('textColor').value = preset.textColor;
+			$('glow').checked = preset.glow;
+			$('icon').value = role;
+			renderPreview();
+		}
+
+		function resetForm() {
+			selectedId = null;
+			deleteBtn.disabled = true;
+			form.reset();
+			$('role').value = 'owner';
+			applyPreset('owner');
+			$('telegramId').value = '';
+			$('username').value = '';
+			$('displayName').value = '';
+			$('perks').value = '';
+			renderPreview();
+		}
+
+		function fillForm(badge) {
+			const preset = ROLE_PRESETS[badge.role] || ROLE_PRESETS.coder;
+			selectedId = Number(badge.telegram_id);
+			deleteBtn.disabled = false;
+			$('telegramId').value = String(badge.telegram_id ?? '');
+			$('username').value = badge.username || '';
+			$('displayName').value = badge.display_name || '';
+			$('role').value = badge.role || 'coder';
+			$('icon').value = badge.icon || badge.role || 'auto';
+			$('label').value = badge.label ?? preset.label;
+			$('title').value = badge.title ?? preset.title;
+			$('tagline').value = badge.tagline ?? preset.tagline;
+			$('description').value = badge.description ?? preset.description;
+			$('fill').value = badge.fill || preset.fill;
+			$('outline').value = badge.outline || preset.outline;
+			const color = PALETTES[badge.text_color];
+			$('textColor').value = isHex(badge.text_color)
+				? badge.text_color
+				: (color ? color.fg : preset.textColor);
+			$('glow').checked = badge.glow ?? preset.glow;
+			$('perks').value = Array.isArray(badge.perks) ? badge.perks.join('\n') : '';
+			renderPreview();
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+
+		function isHex(value) {
+			return /^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(value || '');
+		}
+
+		function hexToRgba(value, alpha) {
+			if (!isHex(value)) {
+				return `rgba(255, 255, 255, ${alpha})`;
+			}
+			let hex = value.slice(1);
+			if (hex.length === 3) {
+				hex = hex.split('').map((part) => part + part).join('');
+			}
+			const number = Number.parseInt(hex, 16);
+			const r = (number >> 16) & 255;
+			const g = (number >> 8) & 255;
+			const b = number & 255;
+			return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+		}
+
+		function fillPair(name) {
+			return PALETTES[name] || PALETTES['neon-blue'];
+		}
+
+		function outlineColor(name) {
+			if (!name || name === 'none') {
+				return null;
+			}
+			return PALETTES[name] ? PALETTES[name].a : (isHex(name) ? name : null);
+		}
+
+		function textColor(name, fill) {
+			if (PALETTES[name]) {
+				return PALETTES[name].fg;
+			}
+			return isHex(name) ? name : fillPair(fill).fg;
+		}
+
+		function iconSvg(name) {
+			const path = ICON_PATHS[name] || ICON_PATHS.check;
+			return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
+		}
+
+		function badgeIconName(badge) {
+			return badge.icon || badge.role || 'check';
+		}
+
+		function styleBadge(element, data) {
+			const fill = fillPair(data.fill);
+			const outline = outlineColor(data.outline);
+			const foreground = textColor(data.text_color, data.fill);
+			const glowColor = outline || fill.a;
+			element.style.background = `linear-gradient(90deg, ${fill.a}, ${fill.b})`;
+			element.style.color = foreground;
+			element.style.borderColor = outline || 'transparent';
+			element.style.boxShadow = data.glow
+				? `0 0 0 3px ${hexToRgba(glowColor, 0.2)}, 0 0 24px ${hexToRgba(glowColor, 0.7)}`
+				: 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)';
+		}
+
+		function renderPreview() {
+			const data = readForm();
+			$('previewLabel').textContent = data.label;
+			$('previewIcon').innerHTML = iconSvg(badgeIconName(data));
+			styleBadge($('badgePreview'), data);
+			$('previewRole').textContent = ROLE_LABELS[data.role] || data.role;
+			$('previewTitle').textContent = data.title || 'Без заголовка';
+			$('previewTagline').textContent = data.tagline || 'Без подписи';
+			$('previewDescription').textContent = data.description || 'Описание не задано';
+
+			const perks = $('previewPerks');
+			perks.replaceChildren();
+			for (const perk of data.perks) {
+				const item = document.createElement('li');
+				item.className = 'flex gap-2';
+				const dot = document.createElement('span');
+				dot.className = 'mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary';
+				const text = document.createElement('span');
+				text.textContent = perk;
+				item.append(dot, text);
+				perks.append(item);
+			}
+
+			const fill = fillPair(data.fill);
+			const outline = outlineColor(data.outline);
+			const foreground = textColor(data.text_color, data.fill);
+			const palette = $('previewPalette');
+			palette.replaceChildren();
+			for (const [color, title] of [
+				[fill.a, 'Заливка A'],
+				[fill.b, 'Заливка B'],
+				[outline || 'transparent', 'Обводка'],
+				[foreground, 'Текст'],
+			]) {
+				const swatch = document.createElement('span');
+				swatch.className = 'h-6 w-6 rounded-md border border-border';
+				swatch.title = title;
+				swatch.style.background = color;
+				palette.append(swatch);
+			}
+		}
+
+		function setHealth(online) {
+			const dot = $('apiDot');
+			dot.className = online
+				? 'h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]'
+				: 'h-2 w-2 rounded-full bg-destructive shadow-[0_0_10px_hsl(var(--destructive)/0.8)]';
+			$('apiLabel').textContent = online ? 'API online' : 'API offline';
+		}
+
+		function setStatus(message, type = '') {
+			listStatus.textContent = message;
+			listStatus.className = type === 'error'
+				? 'border-b px-6 py-3 text-sm text-destructive'
+				: type === 'ok'
+					? 'border-b px-6 py-3 text-sm text-emerald-600 dark:text-emerald-400'
+					: 'border-b px-6 py-3 text-sm text-muted-foreground';
+		}
+
+		function toast(message, type = 'success') {
+			const container = $('toasts');
+			const item = document.createElement('div');
+			item.className = `toast-enter pointer-events-auto flex items-start gap-3 rounded-lg border bg-card p-4 text-sm shadow-lg ${type === 'error' ? 'border-destructive/50' : 'border-emerald-500/40'}`;
+			const mark = document.createElement('span');
+			mark.className = `mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ${type === 'error' ? 'bg-destructive/15 text-destructive' : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'}`;
+			mark.textContent = type === 'error' ? '!' : '✓';
+			const text = document.createElement('span');
+			text.className = 'leading-5';
+			text.textContent = message;
+			item.append(mark, text);
+			container.append(item);
+			window.setTimeout(() => item.remove(), 4200);
+		}
+
+		function requestHeaders(extra = {}) {
+			const headers = { Accept: 'application/json', ...extra };
+			const token = adminToken.value.trim() || storedToken || '';
+			if (token) {
+				headers['X-Admin-Token'] = token;
+			}
+			return headers;
+		}
+
+		async function apiRequest(path, options = {}) {
+			const headers = requestHeaders(options.headers || {});
+			if (options.body && !headers['Content-Type']) {
+				headers['Content-Type'] = 'application/json';
+			}
+			const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+			const text = await response.text();
+			let data = {};
+			if (text) {
+				try {
+					data = JSON.parse(text);
+				} catch {
+					data = { detail: text };
+				}
+			}
+			if (!response.ok) {
+				const detail = Array.isArray(data.detail)
+					? data.detail.map((entry) => entry.msg || JSON.stringify(entry)).join('; ')
+					: data.detail;
+				throw new Error(detail || `HTTP ${response.status}`);
+			}
+			return data;
+		}
+
+		function badgeChip(badge) {
+			const chip = document.createElement('span');
+			chip.className = 'badge-chip';
+			const preset = ROLE_PRESETS[badge.role] || ROLE_PRESETS.coder;
+			const label = document.createElement('span');
+			label.textContent = badge.label || preset.label;
+			const icon = document.createElement('span');
+			icon.className = 'badge-icon';
+			icon.innerHTML = iconSvg(badgeIconName(badge));
+			chip.append(label, icon);
+			styleBadge(chip, {
+				fill: badge.fill || preset.fill,
+				outline: badge.outline || preset.outline,
+				text_color: badge.text_color || preset.textColor,
+				glow: badge.glow ?? preset.glow,
+			});
+			return chip;
+		}
+
+		function skeletonRows() {
+			badgeBody.replaceChildren();
+			emptyState.classList.add('hidden');
+			for (let index = 0; index < 4; index += 1) {
+				const row = document.createElement('tr');
+				row.className = 'border-b';
+				for (let cellIndex = 0; cellIndex < 5; cellIndex += 1) {
+					const cell = document.createElement('td');
+					const bar = document.createElement('div');
+					bar.className = 'h-4 animate-pulse rounded bg-muted';
+					bar.style.width = cellIndex === 0 ? '110px' : '70%';
+					cell.append(bar);
+					row.append(cell);
+				}
+				badgeBody.append(row);
+			}
+		}
+
+		function renderTable(badges) {
+			badgeBody.replaceChildren();
+			emptyState.classList.toggle('hidden', badges.length > 0);
+			for (const badge of badges) {
+				const row = document.createElement('tr');
+				row.className = 'border-b transition-colors hover:bg-muted/40';
+
+				const badgeCell = document.createElement('td');
+				badgeCell.append(badgeChip(badge));
+
+				const userCell = document.createElement('td');
+				const name = document.createElement('div');
+				name.className = 'font-medium';
+				name.textContent = badge.display_name || '—';
+				const username = document.createElement('div');
+				username.className = 'mt-0.5 text-xs text-muted-foreground';
+				username.textContent = badge.username ? `@${badge.username}` : '—';
+				userCell.append(name, username);
+
+				const idCell = document.createElement('td');
+				idCell.className = 'font-mono text-xs text-muted-foreground';
+				idCell.textContent = String(badge.telegram_id);
+
+				const roleCell = document.createElement('td');
+				const role = document.createElement('span');
+				role.className = 'inline-flex rounded-full border bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground';
+				role.textContent = ROLE_LABELS[badge.role] || badge.role || '—';
+				roleCell.append(role);
+
+				const actionsCell = document.createElement('td');
+				actionsCell.className = 'text-right';
+				const actions = document.createElement('div');
+				actions.className = 'inline-flex items-center gap-1';
+
+				const edit = document.createElement('button');
+				edit.type = 'button';
+				edit.className = 'btn btn-ghost btn-icon';
+				edit.title = 'Изменить';
+				edit.setAttribute('aria-label', 'Изменить');
+				edit.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>';
+				edit.addEventListener('click', () => fillForm(badge));
+
+				const remove = document.createElement('button');
+				remove.type = 'button';
+				remove.className = 'btn btn-ghost btn-icon text-destructive hover:text-destructive';
+				remove.title = 'Удалить';
+				remove.setAttribute('aria-label', 'Удалить');
+				remove.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
+				remove.addEventListener('click', () => removeBadge(badge.telegram_id));
+
+				actions.append(edit, remove);
+				actionsCell.append(actions);
+				row.append(badgeCell, userCell, idCell, roleCell, actionsCell);
+				badgeBody.append(row);
+			}
+		}
+
+		async function loadBadges({ silent = false } = {}) {
+			if (!silent) {
+				skeletonRows();
+				setStatus('Загрузка бейджей...');
+			}
+			try {
+				const query = search.value.trim();
+				const suffix = query ? `?q=${encodeURIComponent(query)}` : '?limit=500';
+				const data = await apiRequest(`/badges${suffix}`);
+				const badges = Array.isArray(data.badges) ? data.badges : [];
+				renderTable(badges);
+				if (!silent) {
+					setStatus(`Загружено: ${badges.length}`, 'ok');
+				}
+				setHealth(true);
+			} catch (error) {
+				setStatus(`Не удалось загрузить список: ${error.message}`, 'error');
+				emptyState.classList.remove('hidden');
+				badgeBody.replaceChildren();
+				setHealth(false);
+			}
+		}
+
+		async function saveBadge(event) {
+			event.preventDefault();
+			const data = readForm();
+			if (!Number.isInteger(data.telegram_id) || data.telegram_id <= 0) {
+				toast('Укажите корректный Telegram ID', 'error');
+				return;
+			}
+			const saveBtn = $('saveBtn');
+			saveBtn.disabled = true;
+			$('saveSpinner').classList.remove('hidden');
+			$('saveText').textContent = 'Сохранение...';
+			setStatus('Сохранение бейджа...');
+			try {
+				const payload = {
+					...data,
+					icon: data.icon || null,
+					username: data.username || null,
+					display_name: data.display_name || null,
+					label: data.label || null,
+					text_color: data.text_color || null,
+					title: data.title || null,
+					tagline: data.tagline || null,
+					description: data.description || null,
+				};
+				const result = await apiRequest('/badges/set', {
+					method: 'POST',
+					body: JSON.stringify(payload),
+				});
+				fillForm(result.badge);
+				await loadBadges({ silent: true });
+				setStatus(`Бейдж для ID ${result.badge.telegram_id} сохранён`, 'ok');
+				toast('Бейдж сохранён');
+				setHealth(true);
+			} catch (error) {
+				setStatus(`Ошибка сохранения: ${error.message}`, 'error');
+				toast(`Ошибка сохранения: ${error.message}`, 'error');
+			} finally {
+				saveBtn.disabled = false;
+				$('saveSpinner').classList.add('hidden');
+				$('saveText').textContent = 'Сохранить бейдж';
+			}
+		}
+
+		async function removeBadge(id) {
+			if (!window.confirm(`Удалить бейдж для ID ${id}?`)) {
+				return;
+			}
+			try {
+				await apiRequest(`/badges/${id}`, { method: 'DELETE' });
+				if (selectedId === Number(id)) {
+					resetForm();
+				}
+				await loadBadges({ silent: true });
+				setStatus(`Бейдж для ID ${id} удалён`, 'ok');
+				toast('Бейдж удалён');
+				setHealth(true);
+			} catch (error) {
+				setStatus(`Ошибка удаления: ${error.message}`, 'error');
+				toast(`Ошибка удаления: ${error.message}`, 'error');
+			}
+		}
+
+		async function checkHealth() {
+			try {
+				await apiRequest('/health');
+				setHealth(true);
+			} catch {
+				setHealth(false);
+			}
+		}
+
+		form.addEventListener('input', (event) => {
+			if (event.target === $('role')) {
+				applyPreset($('role').value);
+				return;
+			}
+			renderPreview();
+		});
+
+		form.addEventListener('submit', saveBadge);
+		deleteBtn.addEventListener('click', () => {
+			if (selectedId !== null) {
+				removeBadge(selectedId);
+			}
+		});
+		$('resetBtn').addEventListener('click', resetForm);
+		$('refreshBtn').addEventListener('click', () => loadBadges());
+		$('saveTokenBtn').addEventListener('click', () => {
+			const value = adminToken.value.trim();
+			try {
+				if (value) {
+					localStorage.setItem(TOKEN_KEY, value);
+					storedToken = value;
+				} else {
+					localStorage.removeItem(TOKEN_KEY);
+					storedToken = null;
+				}
+			} catch (error) {}
+			setStatus('Admin token сохранён', 'ok');
+			toast('Admin token сохранён');
+			loadBadges();
+		});
+		search.addEventListener('input', () => {
+			window.clearTimeout(searchTimer);
+			searchTimer = window.setTimeout(() => loadBadges(), 300);
+		});
+		$('themeToggle').addEventListener('click', () => {
+			const dark = !document.documentElement.classList.contains('dark');
+			document.documentElement.classList.toggle('dark', dark);
+			try {
+				localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+			} catch (error) {}
+		});
+
+		adminToken.value = storedToken || '';
+		$('apiBase').textContent = API_BASE;
+		resetForm();
+		checkHealth();
+		loadBadges();
+	</script>
+</body>
+</html>
