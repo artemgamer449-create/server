@@ -3,16 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>VisionGram Badge Studio</title>
-	<script>
-		(function () {
-			var theme = 'dark';
-			try {
-				theme = localStorage.getItem('visiongram.theme') || 'dark';
-			} catch (error) {}
-			document.documentElement.classList.toggle('dark', theme !== 'light');
-		})();
-	</script>
+	<title>VisionGram Preference</title>
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
@@ -20,1145 +11,1298 @@
 			theme: {
 				extend: {
 					colors: {
-						border: 'hsl(var(--border))',
-						input: 'hsl(var(--input))',
-						ring: 'hsl(var(--ring))',
-						background: 'hsl(var(--background))',
-						foreground: 'hsl(var(--foreground))',
-						primary: {
-							DEFAULT: 'hsl(var(--primary))',
-							foreground: 'hsl(var(--primary-foreground))',
-						},
-						secondary: {
-							DEFAULT: 'hsl(var(--secondary))',
-							foreground: 'hsl(var(--secondary-foreground))',
-						},
-						destructive: {
-							DEFAULT: 'hsl(var(--destructive))',
-							foreground: 'hsl(var(--destructive-foreground))',
-						},
-						muted: {
-							DEFAULT: 'hsl(var(--muted))',
-							foreground: 'hsl(var(--muted-foreground))',
-						},
-						accent: {
-							DEFAULT: 'hsl(var(--accent))',
-							foreground: 'hsl(var(--accent-foreground))',
-						},
-						popover: {
-							DEFAULT: 'hsl(var(--popover))',
-							foreground: 'hsl(var(--popover-foreground))',
-						},
-						card: {
-							DEFAULT: 'hsl(var(--card))',
-							foreground: 'hsl(var(--card-foreground))',
-						},
-					},
-					borderRadius: {
-						lg: 'var(--radius)',
-						md: 'calc(var(--radius) - 2px)',
-						sm: 'calc(var(--radius) - 4px)',
+						surface: '#0a0a0c',
+						panel: '#121214',
+						panel2: '#17171a',
+						edge: '#232327',
+						edge2: '#2e2e33',
+						ink: '#fafafa',
+						mut: '#9b9ba3',
+						dim: '#6b6b74',
 					},
 					fontFamily: {
-						sans: ['Inter', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'sans-serif'],
+						sans: ['var(--vg-font, "Inter")', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'sans-serif'],
 					},
 				},
 			},
 		};
 	</script>
 	<style>
-		:root {
-			color-scheme: light;
-			--background: 0 0% 100%;
-			--foreground: 240 10% 3.9%;
-			--card: 0 0% 100%;
-			--card-foreground: 240 10% 3.9%;
-			--popover: 0 0% 100%;
-			--popover-foreground: 240 10% 3.9%;
-			--primary: 262.1 83.3% 57.8%;
-			--primary-foreground: 210 20% 98%;
-			--secondary: 240 4.8% 95.9%;
-			--secondary-foreground: 240 5.9% 10%;
-			--muted: 240 4.8% 95.9%;
-			--muted-foreground: 240 3.8% 46.1%;
-			--accent: 240 4.8% 95.9%;
-			--accent-foreground: 240 5.9% 10%;
-			--destructive: 0 84.2% 60.2%;
-			--destructive-foreground: 0 0% 98%;
-			--border: 240 5.9% 90%;
-			--input: 240 5.9% 90%;
-			--ring: 262.1 83.3% 57.8%;
-			--radius: 0.75rem;
-		}
-
-		.dark {
-			color-scheme: dark;
-			--background: 240 10% 3.9%;
-			--foreground: 0 0% 98%;
-			--card: 240 10% 5.9%;
-			--card-foreground: 0 0% 98%;
-			--popover: 240 10% 3.9%;
-			--popover-foreground: 0 0% 98%;
-			--primary: 263.4 70% 50.4%;
-			--primary-foreground: 210 20% 98%;
-			--secondary: 240 3.7% 15.9%;
-			--secondary-foreground: 0 0% 98%;
-			--muted: 240 3.7% 15.9%;
-			--muted-foreground: 240 5% 64.9%;
-			--accent: 240 3.7% 15.9%;
-			--accent-foreground: 0 0% 98%;
-			--destructive: 0 62.8% 30.6%;
-			--destructive-foreground: 0 0% 98%;
-			--border: 240 3.7% 15.9%;
-			--input: 240 3.7% 15.9%;
-			--ring: 263.4 70% 50.4%;
-		}
-
-		html {
-			scroll-behavior: smooth;
-		}
-
+		:root { color-scheme: dark; }
+		html, body { background: #060608; }
 		body {
+			font-family: var(--vg-font, "Inter"), ui-sans-serif, system-ui, Segoe UI, sans-serif;
+			-webkit-font-smoothing: antialiased;
+			text-rendering: optimizeLegibility;
 			font-feature-settings: "rlig" 1, "calt" 1;
 		}
+		::-webkit-scrollbar { width: 10px; height: 10px; }
+		::-webkit-scrollbar-track { background: transparent; }
+		::-webkit-scrollbar-thumb { background: #232327; border-radius: 999px; border: 2px solid #060608; }
+		::-webkit-scrollbar-thumb:hover { background: #2e2e33; }
+
+		.card { background: #0f0f11; border: 1px solid #1e1e22; }
+		.card-2 { background: #121214; border: 1px solid #1e1e22; }
+
+		.field {
+			width: 100%;
+			height: 40px;
+			border-radius: 10px;
+			border: 1px solid #232327;
+			background: #0b0b0d;
+			padding: 0 12px;
+			font-size: 14px;
+			color: #fafafa;
+			outline: none;
+			transition: border-color .15s ease, box-shadow .15s ease;
+		}
+		.field:focus { border-color: #3f3f46; box-shadow: 0 0 0 3px rgba(255,255,255,0.04); }
+		.field::placeholder { color: #55555c; }
+		textarea.field { height: auto; padding: 10px 12px; resize: vertical; line-height: 1.5; }
+		select.field { appearance: none; padding-right: 30px; }
+
+		.btn {
+			display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+			white-space: nowrap; border-radius: 10px; font-size: 13.5px; font-weight: 500;
+			height: 38px; padding: 0 16px; transition: all .15s ease;
+			border: 1px solid transparent; cursor: pointer;
+		}
+		.btn:disabled { opacity: .45; pointer-events: none; }
+		.btn-primary { background: #fafafa; color: #0a0a0c; }
+		.btn-primary:hover { background: #e4e4e7; }
+		.btn-ghost { background: transparent; color: #d4d4d8; border-color: #232327; }
+		.btn-ghost:hover { background: #17171a; border-color: #2e2e33; }
+		.btn-danger { background: transparent; color: #f87171; border-color: rgba(248,113,113,.25); }
+		.btn-danger:hover { background: rgba(248,113,113,.1); border-color: rgba(248,113,113,.4); }
+		.btn-icon { width: 38px; padding: 0; }
+
+		.toggle { position: relative; width: 40px; height: 22px; flex: none; cursor: pointer; }
+		.toggle input { opacity: 0; width: 0; height: 0; }
+		.toggle .track {
+			position: absolute; inset: 0; border-radius: 999px; background: #232327;
+			transition: background .18s ease;
+		}
+		.toggle .track::after {
+			content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+			border-radius: 999px; background: #6b6b74; transition: all .18s ease;
+		}
+		.toggle input:checked + .track { background: #353539; }
+		.toggle input:checked + .track::after { transform: translateX(18px); background: #fafafa; }
 
 		.badge-chip {
-			display: inline-flex;
-			align-items: center;
-			gap: 0.4rem;
-			max-width: 100%;
-			padding: 0.38rem 0.72rem;
+			display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+			padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600;
+			letter-spacing: .06em; line-height: 1; text-transform: uppercase; white-space: nowrap;
 			border: 1px solid transparent;
-			border-radius: 9999px;
-			font-size: 0.68rem;
-			font-weight: 800;
-			letter-spacing: 0.08em;
-			line-height: 1;
-			text-transform: uppercase;
-			white-space: nowrap;
-			transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 		}
+		.badge-chip .bi { display: inline-flex; width: 13px; height: 13px; flex: none; }
+		.badge-chip .bi svg { width: 100%; height: 100%; }
 
-		.badge-chip .badge-icon {
-			display: inline-flex;
-			width: 1rem;
-			height: 1rem;
-			align-items: center;
-			justify-content: center;
-			flex: none;
+		.shape-box {
+			position: relative; display: flex; align-items: center; justify-content: center;
+			width: 72px; height: 72px; border: 2px solid #2e2e33; border-radius: 12px;
+			margin: 0 auto; transition: all .15s ease;
 		}
+		.shape-box .shape-inner {
+			width: 44px; height: 44px; background: linear-gradient(135deg, #2e2e33, #1a1a1e);
+			border: 1px solid #44444b; display: flex; align-items: center; justify-content: center;
+		}
+		.shape-box.active { border-color: #fafafa; }
 
-		.badge-chip .badge-icon svg {
-			width: 100%;
-			height: 100%;
-		}
+		.nav-item { display: flex; align-items: center; gap: 11px; width: 100%; padding: 9px 12px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: #9b9ba3; border: 1px solid transparent; transition: all .15s ease; cursor: pointer; }
+		.nav-item:hover { color: #e4e4e7; background: #121214; }
+		.nav-item.active { color: #fafafa; background: #1a1a1e; border-color: #232327; }
+		.nav-item svg { width: 17px; height: 17px; flex: none; }
 
-		.toast-enter {
-			animation: toast-in 0.22s ease-out;
-		}
+		.spin { animation: spin 1s linear infinite; }
+		@keyframes spin { to { transform: rotate(360deg); } }
+		.fade-in { animation: fade .2s ease-out; }
+		@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-		@keyframes toast-in {
-			from {
-				opacity: 0;
-				transform: translateY(8px) scale(0.98);
-			}
-			to {
-				opacity: 1;
-				transform: translateY(0) scale(1);
-			}
-		}
-
-		.list-scroll::-webkit-scrollbar {
-			height: 8px;
-		}
-
-		.list-scroll::-webkit-scrollbar-track {
-			background: transparent;
-		}
-
-		.list-scroll::-webkit-scrollbar-thumb {
-			border-radius: 9999px;
-			background: hsl(var(--border));
-		}
-
-		input[type="color"]::-webkit-color-swatch-wrapper {
-			padding: 0;
-		}
-
-		input[type="color"]::-webkit-color-swatch {
-			border: 0;
-			border-radius: calc(var(--radius) - 4px);
-		}
+		input[type="range"] { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 999px; background: #232327; outline: none; }
+		input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 999px; background: #fafafa; border: none; cursor: pointer; }
 	</style>
-	<style type="text/tailwindcss">
-		@layer base {
-			* {
-				@apply border-border;
-			}
-
-			body {
-				@apply bg-background text-foreground antialiased;
-			}
-		}
-
-		@layer components {
-			.card-shad {
-				@apply rounded-xl border bg-card text-card-foreground shadow-sm;
-			}
-
-			.btn {
-				@apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50;
-			}
-
-			.btn-primary {
-				@apply h-10 bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90;
-			}
-
-			.btn-secondary {
-				@apply h-10 bg-secondary px-4 py-2 text-secondary-foreground hover:bg-secondary/80;
-			}
-
-			.btn-ghost {
-				@apply h-10 px-4 py-2 hover:bg-accent hover:text-accent-foreground;
-			}
-
-			.btn-outline {
-				@apply h-10 border border-input bg-background px-4 py-2 hover:bg-accent hover:text-accent-foreground;
-			}
-
-			.btn-destructive {
-				@apply h-10 bg-destructive px-4 py-2 text-destructive-foreground hover:bg-destructive/90;
-			}
-
-			.btn-icon {
-				@apply h-9 w-9 p-0;
-			}
-
-			.input-shad {
-				@apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
-			}
-
-			.textarea-shad {
-				@apply flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
-			}
-
-			.select-shad {
-				@apply flex h-10 w-full cursor-pointer appearance-none rounded-md border border-input bg-background px-3 py-2 pr-9 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
-			}
-
-			.label-shad {
-				@apply text-sm font-medium leading-none;
-			}
-
-			.table-shad {
-				@apply w-full caption-bottom text-sm;
-			}
-
-			.table-shad th {
-				@apply h-11 px-4 text-left align-middle text-xs font-medium uppercase tracking-wider text-muted-foreground;
-			}
-
-			.table-shad td {
-				@apply px-4 py-3 align-middle;
-			}
-		}
-	</style>
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=__turnstileReady" async defer></script>
 </head>
-<body class="min-h-screen">
-	<div class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_15%_0%,hsl(var(--primary)/0.16),transparent_32%),radial-gradient(circle_at_90%_0%,rgba(34,211,238,0.1),transparent_28%)]"></div>
+<body class="min-h-screen text-ink antialiased" style="background:#060608;">
+	<div class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_20%_-10%,rgba(255,255,255,0.04),transparent_40%)]"></div>
 
-	<header class="sticky top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-		<div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-			<div class="flex items-center gap-3">
-				<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 text-xs font-extrabold tracking-wider text-black shadow-lg shadow-violet-500/25">VG</div>
-				<div class="leading-tight">
-					<div class="text-sm font-semibold">VisionGram</div>
-					<div class="text-xs text-muted-foreground">Badge Studio</div>
-				</div>
-			</div>
-			<div class="flex items-center gap-3">
-				<div id="apiState" class="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-xs text-muted-foreground">
-					<span id="apiDot" class="h-2 w-2 rounded-full bg-muted-foreground"></span>
-					<span id="apiLabel">Проверка API</span>
-				</div>
-				<button id="themeToggle" type="button" class="btn btn-outline btn-icon" aria-label="Переключить тему" title="Переключить тему">
-					<svg class="h-4 w-4 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<circle cx="12" cy="12" r="4"></circle>
-						<path d="M12 2v2"></path>
-						<path d="M12 20v2"></path>
-						<path d="m4.93 4.93 1.41 1.41"></path>
-						<path d="m17.66 17.66 1.41 1.41"></path>
-						<path d="M2 12h2"></path>
-						<path d="M20 12h2"></path>
-						<path d="m6.34 17.66-1.41 1.41"></path>
-						<path d="m19.07 4.93-1.41 1.41"></path>
-					</svg>
-					<svg class="hidden h-4 w-4 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-					</svg>
-				</button>
-			</div>
-		</div>
-	</header>
+	<div id="app"></div>
 
-	<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-		<div class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-			<div>
-				<h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">Бейджи профиля</h1>
-				<p class="mt-2 max-w-2xl text-sm text-muted-foreground">Выдавайте роли, настраивайте цвета и иконки. Клиент VisionGram забирает бейджи с этого API автоматически.</p>
-			</div>
-			<button id="resetBtn" type="button" class="btn btn-outline self-start sm:self-auto">Новый бейдж</button>
-		</div>
-
-		<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-			<section class="card-shad p-6">
-				<div class="mb-6">
-					<h2 class="text-lg font-semibold tracking-tight">Редактор</h2>
-					<p class="mt-1 text-sm text-muted-foreground">Все поля применяются к бейджу при сохранении.</p>
-				</div>
-
-				<form id="badgeForm" class="grid gap-5" autocomplete="off">
-					<div class="grid gap-4 sm:grid-cols-2">
-						<div class="grid gap-2">
-							<label class="label-shad" for="telegramId">Telegram ID</label>
-							<input id="telegramId" class="input-shad" inputmode="numeric" pattern="[0-9]*" placeholder="123456789" required>
-						</div>
-						<div class="grid gap-2">
-							<label class="label-shad" for="username">Username</label>
-							<input id="username" class="input-shad" placeholder="username">
-						</div>
-					</div>
-
-					<div class="grid gap-2">
-						<label class="label-shad" for="displayName">Отображаемое имя</label>
-						<input id="displayName" class="input-shad" placeholder="Имя в Telegram">
-					</div>
-
-					<div class="grid gap-4 sm:grid-cols-2">
-						<div class="grid gap-2">
-							<label class="label-shad" for="role">Роль</label>
-							<div class="relative">
-								<select id="role" class="select-shad">
-									<option value="owner">Владелец</option>
-									<option value="coder">Разработчик</option>
-									<option value="admin">Администратор</option>
-									<option value="tester">Тестировщик</option>
-								</select>
-								<svg class="pointer-events-none absolute right-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-									<path d="m6 9 6 6 6-6"></path>
-								</svg>
-							</div>
-						</div>
-						<div class="grid gap-2">
-							<label class="label-shad" for="icon">Иконка</label>
-							<div class="relative">
-								<select id="icon" class="select-shad">
-									<option value="auto">Авто (по роли)</option>
-									<option value="owner">Корона</option>
-									<option value="coder">Код</option>
-									<option value="admin">Щит</option>
-									<option value="tester">Колба</option>
-									<option value="check">Галочка</option>
-								</select>
-								<svg class="pointer-events-none absolute right-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-									<path d="m6 9 6 6 6-6"></path>
-								</svg>
-							</div>
-						</div>
-					</div>
-
-					<div class="grid gap-4 sm:grid-cols-2">
-						<div class="grid gap-2">
-							<label class="label-shad" for="label">Метка</label>
-							<input id="label" class="input-shad" maxlength="18" placeholder="OWNER">
-						</div>
-						<div class="grid gap-2">
-							<label class="label-shad" for="title">Заголовок</label>
-							<input id="title" class="input-shad" placeholder="Владелец">
-						</div>
-					</div>
-
-					<div class="grid gap-2">
-						<label class="label-shad" for="tagline">Подпись</label>
-						<input id="tagline" class="input-shad" placeholder="Короткая строка о роли">
-					</div>
-
-					<div class="grid gap-2">
-						<label class="label-shad" for="description">Описание</label>
-						<textarea id="description" class="textarea-shad" rows="3" placeholder="Подробное описание роли"></textarea>
-					</div>
-
-					<div class="grid gap-2">
-						<label class="label-shad" for="perks">Привилегии</label>
-						<textarea id="perks" class="textarea-shad" rows="3" placeholder="Одна привилегия на строку"></textarea>
-					</div>
-
-					<div class="rounded-xl border bg-muted/20 p-4">
-						<div class="mb-4 flex items-center justify-between gap-3">
-							<div>
-								<div class="text-sm font-medium">Цвета</div>
-								<div class="mt-1 text-xs text-muted-foreground">Палитра заливки, обводки и текста.</div>
-							</div>
-							<div id="previewPalette" class="flex items-center gap-1.5"></div>
-						</div>
-						<div class="grid gap-4 sm:grid-cols-3">
-							<div class="grid gap-2">
-								<label class="label-shad" for="fill">Заливка</label>
-								<div class="relative">
-									<select id="fill" class="select-shad">
-										<option value="neon-blue">neon-blue</option>
-										<option value="violet">violet</option>
-										<option value="gold">gold</option>
-										<option value="fire">fire</option>
-										<option value="emerald">emerald</option>
-										<option value="pink">pink</option>
-										<option value="platinum">platinum</option>
-										<option value="teal">teal</option>
-									</select>
-									<svg class="pointer-events-none absolute right-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-										<path d="m6 9 6 6 6-6"></path>
-									</svg>
-								</div>
-							</div>
-							<div class="grid gap-2">
-								<label class="label-shad" for="outline">Обводка</label>
-								<div class="relative">
-									<select id="outline" class="select-shad">
-										<option value="none">none</option>
-										<option value="neon-blue">neon-blue</option>
-										<option value="violet">violet</option>
-										<option value="gold">gold</option>
-										<option value="fire">fire</option>
-										<option value="emerald">emerald</option>
-										<option value="pink">pink</option>
-										<option value="platinum">platinum</option>
-										<option value="teal">teal</option>
-									</select>
-									<svg class="pointer-events-none absolute right-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-										<path d="m6 9 6 6 6-6"></path>
-									</svg>
-								</div>
-							</div>
-							<div class="grid gap-2">
-								<label class="label-shad" for="textColor">Цвет текста</label>
-								<input id="textColor" type="color" class="h-10 w-full cursor-pointer rounded-md border border-input bg-background p-1" value="#f7eeff">
-							</div>
-						</div>
-					</div>
-
-					<label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border bg-background p-4 transition-colors hover:bg-accent/40">
-						<span>
-							<span class="block text-sm font-medium">Свечение</span>
-							<span class="mt-0.5 block text-xs text-muted-foreground">Мягкая подсветка вокруг бейджа.</span>
-						</span>
-						<span class="relative inline-flex">
-							<input id="glow" type="checkbox" class="peer sr-only">
-							<span class="relative h-6 w-11 rounded-full bg-input transition-colors peer-checked:bg-primary after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform after:content-[''] peer-checked:after:translate-x-5"></span>
-						</span>
-					</label>
-
-					<div class="flex flex-wrap items-center gap-3 pt-1">
-						<button id="saveBtn" type="submit" class="btn btn-primary min-w-[170px]">
-							<svg id="saveSpinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z"></path>
-							</svg>
-							<span id="saveText">Сохранить бейдж</span>
-						</button>
-						<button id="deleteBtn" type="button" class="btn btn-destructive" disabled>Удалить</button>
-						<span class="text-xs text-muted-foreground">ID обязателен, остальное можно оставить пустым.</span>
-					</div>
-				</form>
-			</section>
-
-			<aside class="space-y-6 lg:sticky lg:top-24">
-				<section class="card-shad p-6">
-					<div class="flex items-start justify-between gap-4">
-						<div>
-							<h2 class="text-lg font-semibold tracking-tight">Предпросмотр</h2>
-							<p class="mt-1 text-sm text-muted-foreground">Так бейдж будет выглядеть в профиле.</p>
-						</div>
-						<span id="previewRole" class="rounded-full border bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">Владелец</span>
-					</div>
-
-					<div class="mt-6 flex min-h-[160px] items-center justify-center rounded-xl border border-dashed bg-muted/20 p-6">
-						<div id="badgePreview" class="badge-chip">
-							<span id="previewLabel">OWNER</span>
-							<span id="previewIcon" class="badge-icon"></span>
-						</div>
-					</div>
-
-					<div class="mt-6">
-						<h3 id="previewTitle" class="text-xl font-semibold tracking-tight">Владелец</h3>
-						<p id="previewTagline" class="mt-1 text-sm text-muted-foreground">Владелец проекта и хранитель приватных сборок</p>
-						<p id="previewDescription" class="mt-3 text-sm text-muted-foreground">Задаёт направление развития проекта и отвечает за релизный цикл.</p>
-						<ul id="previewPerks" class="mt-4 grid gap-2 text-sm text-muted-foreground"></ul>
-					</div>
-				</section>
-
-				<section class="card-shad p-6">
-					<h2 class="text-sm font-semibold">Как это работает</h2>
-					<div class="mt-4 grid gap-4 text-sm text-muted-foreground">
-						<div class="flex gap-3">
-							<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">1</span>
-							<span>Укажите Telegram ID пользователя.</span>
-						</div>
-						<div class="flex gap-3">
-							<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">2</span>
-							<span>Настройте роль, иконку и цвета.</span>
-						</div>
-						<div class="flex gap-3">
-							<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">3</span>
-							<span>Сохраните — клиент обновит бейдж в течение двух минут.</span>
-						</div>
-					</div>
-				</section>
-			</aside>
-		</div>
-
-		<section class="card-shad mt-6 overflow-hidden">
-			<div class="flex flex-col justify-between gap-4 border-b p-6 sm:flex-row sm:items-center">
-				<div>
-					<h2 class="text-lg font-semibold tracking-tight">Активные бейджи</h2>
-					<p class="mt-1 text-sm text-muted-foreground">Список сохранённых бейджей в базе.</p>
-				</div>
-				<div class="flex flex-col gap-2 sm:flex-row">
-					<div class="relative">
-						<svg class="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<circle cx="11" cy="11" r="8"></circle>
-							<path d="m21 21-4.3-4.3"></path>
-						</svg>
-						<input id="search" class="input-shad w-full pl-9 sm:w-64" placeholder="Поиск по ID, username, имени">
-					</div>
-					<button id="refreshBtn" type="button" class="btn btn-outline">
-						<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
-							<path d="M21 3v6h-6"></path>
-						</svg>
-						Обновить
-					</button>
-				</div>
-			</div>
-
-			<div class="border-b bg-muted/10 p-6">
-				<div class="flex flex-col gap-3 sm:flex-row sm:items-end">
-					<div class="grid flex-1 gap-2">
-						<label class="label-shad" for="adminToken">Admin token</label>
-						<input id="adminToken" type="password" class="input-shad" placeholder="Нужен только если на сервере задан BADGE_ADMIN_TOKEN">
-					</div>
-					<button id="saveTokenBtn" type="button" class="btn btn-secondary">Запомнить</button>
-				</div>
-				<p class="mt-2 text-xs text-muted-foreground">Токен хранится только в localStorage этого браузера.</p>
-			</div>
-
-			<div id="listStatus" class="border-b px-6 py-3 text-sm text-muted-foreground" role="status">Загрузка бейджей...</div>
-
-			<div class="list-scroll overflow-x-auto">
-				<table class="table-shad">
-					<thead class="border-b bg-muted/30">
-						<tr>
-							<th>Бейдж</th>
-							<th>Пользователь</th>
-							<th>Telegram ID</th>
-							<th>Роль</th>
-							<th class="text-right">Действия</th>
-						</tr>
-					</thead>
-					<tbody id="badgeBody"></tbody>
-				</table>
-				<div id="emptyState" class="hidden p-10 text-center">
-					<div class="text-sm font-medium">Пока нет бейджей</div>
-					<div class="mt-1 text-sm text-muted-foreground">Создайте первый бейдж в редакторе выше.</div>
-				</div>
-			</div>
-		</section>
-
-		<footer class="mt-8 flex flex-col justify-between gap-2 text-xs text-muted-foreground sm:flex-row">
-			<span>VisionGram Badge Studio</span>
-			<span>API: <code id="apiBase" class="rounded bg-muted px-1.5 py-0.5"></code></span>
-		</footer>
-	</main>
-
-	<div id="toasts" class="pointer-events-none fixed bottom-4 right-4 z-50 flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2"></div>
+	<div id="toasts" class="pointer-events-none fixed bottom-4 right-4 z-[80] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2"></div>
 
 	<script>
-		const PALETTES = {
-			'neon-blue': { a: '#35e6ff', b: '#2563eb', fg: '#eaf9ff' },
-			violet: { a: '#c084fc', b: '#6d28d9', fg: '#f7eeff' },
-			gold: { a: '#ffe9a3', b: '#b8860b', fg: '#2a1c00' },
-			fire: { a: '#ff9a6b', b: '#c81d25', fg: '#fff2ec' },
-			emerald: { a: '#6cf7c1', b: '#047857', fg: '#e9fff8' },
-			pink: { a: '#ffa6e6', b: '#d6336c', fg: '#fff0fa' },
-			platinum: { a: '#f7faff', b: '#93a4c8', fg: '#0d1424' },
-			teal: { a: '#8dfff3', b: '#0f766e', fg: '#e9fffb' },
+		const TURNSTILE_SITE_KEY = "0x4AAAAAAFi7N7hnSxXvj04S";
+		const TOKEN_KEY = "visiongram.token";
+
+		const ICONS = {
+			dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+			badges: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M7 12v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4"/><path d="M9 22h6"/></svg>',
+			telegram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>',
+			avatar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>',
+			fonts: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 10 4"/><path d="M14 20 20 4"/><path d="M7 13h6"/><path d="M15 13h6"/></svg>',
+			sessions: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="16" r="1.6"/></svg>',
+			logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>',
+			menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>',
 		};
 
-		const ROLE_PRESETS = {
-			owner: {
-				label: 'ᴏᴡɴᴇʀ',
-				title: 'Владелец',
-				tagline: 'Владелец проекта и хранитель приватных сборок',
-				description: 'Задаёт направление развития проекта и отвечает за релизный цикл.',
-				fill: 'violet',
-				outline: 'gold',
-				textColor: '#f7eeff',
-				glow: true,
-			},
-			coder: {
-				label: 'ᴄᴏᴅᴇʀ',
-				title: 'Разработчик',
-				tagline: 'Разработчик кастомного функционала и ядра клиента',
-				description: 'Пишет и ревьюит код клиента, отвечает за стабильность фич.',
-				fill: 'emerald',
-				outline: 'neon-blue',
-				textColor: '#e9fff8',
-				glow: true,
-			},
-			admin: {
-				label: 'ᴀᴅᴍɪɴ',
-				title: 'Администратор',
-				tagline: 'Администратор сообщества и модератор',
-				description: 'Следит за порядком в чатах и каналах, помогает пользователям.',
-				fill: 'fire',
-				outline: 'gold',
-				textColor: '#fff2ec',
-				glow: true,
-			},
-			tester: {
-				label: 'ᴛᴇꜱᴛᴇʀ',
-				title: 'Тестировщик',
-				tagline: 'Участник закрытого тестирования сборки',
-				description: 'Проверяет новые сборки до публичного релиза.',
-				fill: 'neon-blue',
-				outline: 'teal',
-				textColor: '#eaf9ff',
-				glow: true,
-			},
+		const ROLE_ICONS = {
+			owner: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4 4 5-7 5 7 4-4v11H3V7z"/><path d="M3 21h18"/></svg>',
+			coder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 9-4 3 4 3"/><path d="m16 9 4 3-4 3"/><path d="m14 5-4 14"/></svg>',
+			admin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+			tester: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v5l-5 10a3 3 0 0 0 2.7 4.3h8.6A3 3 0 0 0 19 18L14 8V3"/><path d="M8 14h8"/></svg>',
+			check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>',
 		};
 
-		const ROLE_LABELS = {
-			owner: 'Владелец',
-			coder: 'Разработчик',
-			admin: 'Администратор',
-			tester: 'Тестировщик',
+		const MUTED = {
+			'neon-blue': { fg: '#7dd3fc', bg: 'rgba(56,189,248,.10)', border: 'rgba(56,189,248,.28)' },
+			violet: { fg: '#c4b5fd', bg: 'rgba(139,92,246,.10)', border: 'rgba(139,92,246,.28)' },
+			gold: { fg: '#fcd34d', bg: 'rgba(245,158,11,.10)', border: 'rgba(245,158,11,.28)' },
+			fire: { fg: '#fca5a5', bg: 'rgba(239,68,68,.10)', border: 'rgba(239,68,68,.28)' },
+			emerald: { fg: '#6ee7b7', bg: 'rgba(16,185,129,.10)', border: 'rgba(16,185,129,.28)' },
+			pink: { fg: '#f9a8d4', bg: 'rgba(236,72,153,.10)', border: 'rgba(236,72,153,.28)' },
+			platinum: { fg: '#e5e7eb', bg: 'rgba(148,163,184,.10)', border: 'rgba(148,163,184,.28)' },
+			teal: { fg: '#5eead4', bg: 'rgba(20,184,166,.12)', border: 'rgba(20,184,166,.28)' },
+		};
+		const DEFAULT_PALETTE = 'violet';
+
+		const ROLE_LABELS = { owner: 'Owner', coder: 'Developer', admin: 'Admin', tester: 'Tester' };
+
+		const SHAPES = {
+			circle: { label: 'Circle', css: 'clip-path:circle(50% at 50% 50%);border-radius:0;' },
+			rounded: { label: 'Rounded', css: 'border-radius:32%;' },
+			squircle: { label: 'Squircle', css: 'border-radius:24%;' },
+			square: { label: 'Square', css: 'border-radius:0;' },
+			diamond: { label: 'Diamond', css: 'clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);border-radius:0;' },
+			hexagon: { label: 'Hexagon', css: 'clip-path:polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0 50%);border-radius:0;' },
+			octagon: { label: 'Octagon', css: 'clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);border-radius:0;' },
+			star: { label: 'Star', css: 'clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);border-radius:0;' },
+			leaf: { label: 'Leaf', css: 'border-radius:50% 50% 50% 0;' },
+			none: { label: 'None', css: 'border-radius:0;' },
 		};
 
-		const ICON_PATHS = {
-			owner: '<path d="M3 7l4 4 5-7 5 7 4-4v11H3V7z"/><path d="M3 21h18"/>',
-			coder: '<path d="m8 9-4 3 4 3"/><path d="m16 9 4 3-4 3"/><path d="m14 5-4 14"/>',
-			admin: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
-			tester: '<path d="M9 3h6"/><path d="M10 3v5l-5 10a3 3 0 0 0 2.7 4.3h8.6A3 3 0 0 0 19 18L14 8V3"/><path d="M8 14h8"/>',
-			check: '<path d="m5 12 4 4L19 6"/>',
-		};
-
-		const TOKEN_KEY = 'visiongram.badgeAdminToken';
-		const API_KEY = 'visiongram.apiBase';
-		const THEME_KEY = 'visiongram.theme';
+		let token = null;
+		let user = null;
+		let currentTab = 'dashboard';
+		let turnstileToken = '';
+		let activeFontFace = null;
 
 		const $ = (id) => document.getElementById(id);
+		const appEl = $('app');
 
-		function defaultApiBase() {
-			if (!location.protocol.startsWith('http')) {
-				return 'https://sayhost.online';
-			}
-			return location.origin;
+		function storeToken(value) {
+			token = value;
+			try { value ? localStorage.setItem(TOKEN_KEY, value) : localStorage.removeItem(TOKEN_KEY); } catch (e) {}
 		}
-
-		const queryApi = new URLSearchParams(location.search).get('api');
-		let storedApi = null;
-		let storedToken = null;
-		let storedTheme = null;
-		try {
-			storedApi = localStorage.getItem(API_KEY);
-			storedToken = localStorage.getItem(TOKEN_KEY);
-			storedTheme = localStorage.getItem(THEME_KEY);
-		} catch (error) {}
-		const API_BASE = (queryApi || storedApi || defaultApiBase()).replace(/\/+$/, '');
-
-		const form = $('badgeForm');
-		const badgeBody = $('badgeBody');
-		const emptyState = $('emptyState');
-		const listStatus = $('listStatus');
-		const adminToken = $('adminToken');
-		const deleteBtn = $('deleteBtn');
-		const search = $('search');
-		let selectedId = null;
-		let searchTimer = 0;
-
-		function readForm() {
-			const icon = $('icon').value;
-			return {
-				telegram_id: Number($('telegramId').value.trim()),
-				username: $('username').value.trim(),
-				display_name: $('displayName').value.trim(),
-				role: $('role').value,
-				icon: icon === 'auto' ? '' : icon,
-				label: $('label').value.trim(),
-				fill: $('fill').value,
-				outline: $('outline').value,
-				text_color: $('textColor').value.trim(),
-				glow: $('glow').checked,
-				title: $('title').value.trim(),
-				tagline: $('tagline').value.trim(),
-				description: $('description').value.trim(),
-				perks: $('perks').value.split('\n').map((line) => line.trim()).filter(Boolean),
-			};
-		}
-
-		function applyPreset(role) {
-			const preset = ROLE_PRESETS[role] || ROLE_PRESETS.coder;
-			$('label').value = preset.label;
-			$('title').value = preset.title;
-			$('tagline').value = preset.tagline;
-			$('description').value = preset.description;
-			$('fill').value = preset.fill;
-			$('outline').value = preset.outline;
-			$('textColor').value = preset.textColor;
-			$('glow').checked = preset.glow;
-			$('icon').value = role;
-			renderPreview();
-		}
-
-		function resetForm() {
-			selectedId = null;
-			deleteBtn.disabled = true;
-			form.reset();
-			$('role').value = 'owner';
-			applyPreset('owner');
-			$('telegramId').value = '';
-			$('username').value = '';
-			$('displayName').value = '';
-			$('perks').value = '';
-			renderPreview();
-		}
-
-		function fillForm(badge) {
-			const preset = ROLE_PRESETS[badge.role] || ROLE_PRESETS.coder;
-			selectedId = Number(badge.telegram_id);
-			deleteBtn.disabled = false;
-			$('telegramId').value = String(badge.telegram_id ?? '');
-			$('username').value = badge.username || '';
-			$('displayName').value = badge.display_name || '';
-			$('role').value = badge.role || 'coder';
-			$('icon').value = badge.icon || badge.role || 'auto';
-			$('label').value = badge.label ?? preset.label;
-			$('title').value = badge.title ?? preset.title;
-			$('tagline').value = badge.tagline ?? preset.tagline;
-			$('description').value = badge.description ?? preset.description;
-			$('fill').value = badge.fill || preset.fill;
-			$('outline').value = badge.outline || preset.outline;
-			const color = PALETTES[badge.text_color];
-			$('textColor').value = isHex(badge.text_color)
-				? badge.text_color
-				: (color ? color.fg : preset.textColor);
-			$('glow').checked = badge.glow ?? preset.glow;
-			$('perks').value = Array.isArray(badge.perks) ? badge.perks.join('\n') : '';
-			renderPreview();
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		}
-
-		function isHex(value) {
-			return /^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(value || '');
-		}
-
-		function hexToRgba(value, alpha) {
-			if (!isHex(value)) {
-				return `rgba(255, 255, 255, ${alpha})`;
-			}
-			let hex = value.slice(1);
-			if (hex.length === 3) {
-				hex = hex.split('').map((part) => part + part).join('');
-			}
-			const number = Number.parseInt(hex, 16);
-			const r = (number >> 16) & 255;
-			const g = (number >> 8) & 255;
-			const b = number & 255;
-			return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-		}
-
-		function fillPair(name) {
-			return PALETTES[name] || PALETTES['neon-blue'];
-		}
-
-		function outlineColor(name) {
-			if (!name || name === 'none') {
-				return null;
-			}
-			return PALETTES[name] ? PALETTES[name].a : (isHex(name) ? name : null);
-		}
-
-		function textColor(name, fill) {
-			if (PALETTES[name]) {
-				return PALETTES[name].fg;
-			}
-			return isHex(name) ? name : fillPair(fill).fg;
-		}
-
-		function iconSvg(name) {
-			const path = ICON_PATHS[name] || ICON_PATHS.check;
-			return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
-		}
-
-		function badgeIconName(badge) {
-			return badge.icon || badge.role || 'check';
-		}
-
-		function styleBadge(element, data) {
-			const fill = fillPair(data.fill);
-			const outline = outlineColor(data.outline);
-			const foreground = textColor(data.text_color, data.fill);
-			const glowColor = outline || fill.a;
-			element.style.background = `linear-gradient(90deg, ${fill.a}, ${fill.b})`;
-			element.style.color = foreground;
-			element.style.borderColor = outline || 'transparent';
-			element.style.boxShadow = data.glow
-				? `0 0 0 3px ${hexToRgba(glowColor, 0.2)}, 0 0 24px ${hexToRgba(glowColor, 0.7)}`
-				: 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)';
-		}
-
-		function renderPreview() {
-			const data = readForm();
-			$('previewLabel').textContent = data.label;
-			$('previewIcon').innerHTML = iconSvg(badgeIconName(data));
-			styleBadge($('badgePreview'), data);
-			$('previewRole').textContent = ROLE_LABELS[data.role] || data.role;
-			$('previewTitle').textContent = data.title || 'Без заголовка';
-			$('previewTagline').textContent = data.tagline || 'Без подписи';
-			$('previewDescription').textContent = data.description || 'Описание не задано';
-
-			const perks = $('previewPerks');
-			perks.replaceChildren();
-			for (const perk of data.perks) {
-				const item = document.createElement('li');
-				item.className = 'flex gap-2';
-				const dot = document.createElement('span');
-				dot.className = 'mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary';
-				const text = document.createElement('span');
-				text.textContent = perk;
-				item.append(dot, text);
-				perks.append(item);
-			}
-
-			const fill = fillPair(data.fill);
-			const outline = outlineColor(data.outline);
-			const foreground = textColor(data.text_color, data.fill);
-			const palette = $('previewPalette');
-			palette.replaceChildren();
-			for (const [color, title] of [
-				[fill.a, 'Заливка A'],
-				[fill.b, 'Заливка B'],
-				[outline || 'transparent', 'Обводка'],
-				[foreground, 'Текст'],
-			]) {
-				const swatch = document.createElement('span');
-				swatch.className = 'h-6 w-6 rounded-md border border-border';
-				swatch.title = title;
-				swatch.style.background = color;
-				palette.append(swatch);
-			}
-		}
-
-		function setHealth(online) {
-			const dot = $('apiDot');
-			dot.className = online
-				? 'h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]'
-				: 'h-2 w-2 rounded-full bg-destructive shadow-[0_0_10px_hsl(var(--destructive)/0.8)]';
-			$('apiLabel').textContent = online ? 'API online' : 'API offline';
-		}
-
-		function setStatus(message, type = '') {
-			listStatus.textContent = message;
-			listStatus.className = type === 'error'
-				? 'border-b px-6 py-3 text-sm text-destructive'
-				: type === 'ok'
-					? 'border-b px-6 py-3 text-sm text-emerald-600 dark:text-emerald-400'
-					: 'border-b px-6 py-3 text-sm text-muted-foreground';
-		}
+		try { token = localStorage.getItem(TOKEN_KEY) || null; } catch (e) {}
 
 		function toast(message, type = 'success') {
 			const container = $('toasts');
 			const item = document.createElement('div');
-			item.className = `toast-enter pointer-events-auto flex items-start gap-3 rounded-lg border bg-card p-4 text-sm shadow-lg ${type === 'error' ? 'border-destructive/50' : 'border-emerald-500/40'}`;
-			const mark = document.createElement('span');
-			mark.className = `mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ${type === 'error' ? 'bg-destructive/15 text-destructive' : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'}`;
-			mark.textContent = type === 'error' ? '!' : '✓';
+			item.className = 'fade-in pointer-events-auto flex items-start gap-3 rounded-xl border bg-[#121214] p-4 text-sm shadow-xl ' + (type === 'error' ? 'border-[#3f2024]' : 'border-[#2b2b30]');
+			const dot = document.createElement('span');
+			dot.className = 'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ' + (type === 'error' ? 'bg-[#f87171]/15 text-[#f87171]' : 'bg-[#fafafa]/10 text-[#e4e4e7]');
+			dot.textContent = type === 'error' ? '!' : '✓';
 			const text = document.createElement('span');
-			text.className = 'leading-5';
+			text.className = 'leading-5 text-[#d4d4d8]';
 			text.textContent = message;
-			item.append(mark, text);
+			item.append(dot, text);
 			container.append(item);
-			window.setTimeout(() => item.remove(), 4200);
+			setTimeout(() => item.remove(), 4200);
 		}
 
-		function requestHeaders(extra = {}) {
-			const headers = { Accept: 'application/json', ...extra };
-			const token = adminToken.value.trim() || storedToken || '';
-			if (token) {
-				headers['X-Admin-Token'] = token;
-			}
-			return headers;
-		}
-
-		async function apiRequest(path, options = {}) {
-			const headers = requestHeaders(options.headers || {});
-			if (options.body && !headers['Content-Type']) {
-				headers['Content-Type'] = 'application/json';
-			}
-			const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+		async function api(path, options = {}) {
+			const headers = { Accept: 'application/json', ...(options.headers || {}) };
+			if (token) headers['Authorization'] = 'Bearer ' + token;
+			if (options.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+			const response = await fetch(path, { ...options, headers });
 			const text = await response.text();
 			let data = {};
-			if (text) {
-				try {
-					data = JSON.parse(text);
-				} catch {
-					data = { detail: text };
-				}
-			}
+			if (text) { try { data = JSON.parse(text); } catch { data = { detail: text }; } }
 			if (!response.ok) {
-				const detail = Array.isArray(data.detail)
-					? data.detail.map((entry) => entry.msg || JSON.stringify(entry)).join('; ')
-					: data.detail;
-				throw new Error(detail || `HTTP ${response.status}`);
+				const detail = Array.isArray(data.detail) ? data.detail.map((d) => d.msg || JSON.stringify(d)).join('; ') : data.detail;
+				if (response.status === 401 && token) { logoutLocal(); }
+				throw new Error(detail || ('HTTP ' + response.status));
 			}
 			return data;
 		}
 
-		function badgeChip(badge) {
-			const chip = document.createElement('span');
-			chip.className = 'badge-chip';
-			const preset = ROLE_PRESETS[badge.role] || ROLE_PRESETS.coder;
-			const label = document.createElement('span');
-			label.textContent = badge.label || preset.label;
-			const icon = document.createElement('span');
-			icon.className = 'badge-icon';
-			icon.innerHTML = iconSvg(badgeIconName(badge));
-			chip.append(label, icon);
-			styleBadge(chip, {
-				fill: badge.fill || preset.fill,
-				outline: badge.outline || preset.outline,
-				text_color: badge.text_color || preset.textColor,
-				glow: badge.glow ?? preset.glow,
+		async function apiRaw(path) {
+			const headers = { Accept: '*/*' };
+			if (token) headers['Authorization'] = 'Bearer ' + token;
+			const response = await fetch(path, { headers });
+			if (!response.ok) throw new Error('HTTP ' + response.status);
+			return await response.arrayBuffer();
+		}
+
+		function el(tag, className, text) {
+			const node = document.createElement(tag);
+			if (className) node.className = className;
+			if (text !== undefined) node.textContent = text;
+			return node;
+		}
+
+		function svgIcon(name) {
+			const span = el('span');
+			span.innerHTML = ICONS[name] || '';
+			return span;
+		}
+
+		// ---------- Login ----------
+
+		function renderLogin(errorMessage) {
+			document.documentElement.classList.add('dark');
+			appEl.innerHTML = `
+				<div class="flex min-h-screen items-center justify-center px-4 py-10">
+					<div class="fade-in w-full max-w-sm">
+						<div class="mb-8 text-center">
+							<div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-[#232327] bg-[#121214]">
+								<span class="text-sm font-bold tracking-[0.2em] text-[#fafafa]">VG</span>
+							</div>
+							<h1 class="text-xl font-semibold tracking-tight text-[#fafafa]">VisionGram Preference</h1>
+							<p class="mt-1.5 text-sm text-[#6b6b74]">Вход в панель управления</p>
+						</div>
+						<div class="card-2 rounded-2xl p-6">
+							<form id="loginForm" class="grid gap-4">
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Логин</label>
+									<input id="loginUsername" class="field" autocomplete="username" placeholder="owner" required>
+								</div>
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Пароль</label>
+									<input id="loginPassword" type="password" class="field" autocomplete="current-password" placeholder="••••••••" required>
+								</div>
+								<div id="turnstileSlot" class="flex justify-center"></div>
+								<div id="loginError" class="hidden rounded-lg border border-[#3f2024] bg-[#1a0f11] px-3 py-2 text-[13px] text-[#f87171]"></div>
+								<button id="loginBtn" type="submit" class="btn btn-primary mt-1 w-full">Войти</button>
+							</form>
+						</div>
+					</div>
+				</div>`;
+
+			if (errorMessage) showLoginError(errorMessage);
+			$('loginForm').addEventListener('submit', handleLogin);
+			renderTurnstile();
+		}
+
+		function showLoginError(msg) {
+			const box = $('loginError');
+			if (box) { box.textContent = msg; box.classList.remove('hidden'); }
+		}
+
+		async function handleLogin(e) {
+			e.preventDefault();
+			if (!turnstileToken) { showLoginError('Пройдите проверку капчи'); return; }
+			const username = $('loginUsername').value.trim();
+			const password = $('loginPassword').value;
+			const btn = $('loginBtn');
+			btn.disabled = true; btn.textContent = 'Проверка…';
+			try {
+				const data = await api('/api/auth/login', {
+					method: 'POST',
+					body: JSON.stringify({ username, password, turnstile_token: turnstileToken }),
+				});
+				storeToken(data.access_token);
+				user = data.user;
+				turnstileToken = '';
+				await bootApp();
+			} catch (err) {
+				showLoginError(err.message);
+				resetTurnstile();
+				btn.disabled = false; btn.textContent = 'Войти';
+			}
+		}
+
+		function logoutLocal() {
+			storeToken(null);
+			user = null;
+			currentTab = 'dashboard';
+			renderLogin();
+		}
+
+		async function logout() {
+			try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) {}
+			logoutLocal();
+		}
+
+		// ---------- Turnstile ----------
+
+		function renderTurnstile() {
+			const slot = $('turnstileSlot');
+			if (!slot) return;
+			if (typeof window.turnstile === 'undefined') return;
+			window.turnstile.render(slot, {
+				sitekey: TURNSTILE_SITE_KEY,
+				theme: 'dark',
+				callback: (value) => { turnstileToken = value; },
+				'expired-callback': () => { turnstileToken = ''; },
+				'error-callback': () => { turnstileToken = ''; },
 			});
+		}
+
+		function resetTurnstile() {
+			try { if (window.turnstile) window.turnstile.reset(); } catch (e) {}
+		}
+
+		window.__turnstileReady = function () {
+			if (!token) renderTurnstile();
+		};
+
+		// ---------- App shell ----------
+
+		async function bootApp() {
+			try { user = await api('/api/auth/me'); } catch (e) { logoutLocal(); return; }
+			renderShell();
+			switchTab(currentTab);
+			setInterval(refreshSystem, 5000);
+			applyActiveFont();
+		}
+
+		const NAV = [
+			{ id: 'dashboard', label: 'Дашборд', icon: 'dashboard' },
+			{ id: 'badges', label: 'Бейджи', icon: 'badges' },
+			{ id: 'telegram', label: 'Кастом Telegram', icon: 'telegram' },
+			{ id: 'avatars', label: 'Формы аватарок', icon: 'avatar' },
+			{ id: 'fonts', label: 'Шрифты', icon: 'fonts' },
+			{ id: 'sessions', label: 'Сессии', icon: 'sessions' },
+		];
+
+		function renderShell() {
+			appEl.innerHTML = `
+				<div class="mx-auto flex min-h-screen w-full max-w-[1280px] flex-col lg:flex-row">
+					<aside class="hidden w-[240px] shrink-0 border-r border-[#1e1e22] lg:flex lg:flex-col">
+						<div class="flex h-16 items-center gap-3 border-b border-[#1e1e22] px-5">
+							<div class="flex h-9 w-9 items-center justify-center rounded-lg border border-[#232327] bg-[#121214]">
+								<span class="text-xs font-bold tracking-[0.18em] text-[#fafafa]">VG</span>
+							</div>
+							<div class="leading-tight">
+								<div class="text-sm font-semibold text-[#fafafa]">VisionGram</div>
+								<div class="text-[11px] text-[#6b6b74]">Preference</div>
+							</div>
+						</div>
+						<nav class="flex-1 space-y-1 p-3">
+							${NAV.map((n) => `<button class="nav-item" data-tab="${n.id}">${ICONS[n.icon]}<span>${n.label}</span></button>`).join('')}
+						</nav>
+						<div class="border-t border-[#1e1e22] p-3">
+							<div class="mb-3 flex items-center gap-3 px-3">
+								<div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#232327] text-[12px] font-semibold text-[#fafafa]">${(user.username || 'o').slice(0, 1).toUpperCase()}</div>
+								<div class="leading-tight">
+									<div class="text-[13px] font-medium text-[#e4e4e7]">${escapeHtml(user.username)}</div>
+									<div class="text-[11px] text-[#6b6b74]">Владелец</div>
+								</div>
+							</div>
+							<button id="logoutBtn" class="nav-item" style="color:#f87171;">${ICONS.logout}<span>Выйти</span></button>
+						</div>
+					</aside>
+
+					<div class="flex min-w-0 flex-1 flex-col">
+						<header class="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[#1e1e22] bg-[#060608]/80 px-5 backdrop-blur">
+							<button id="mobileMenu" class="btn btn-ghost btn-icon lg:hidden">${ICONS.menu}</button>
+							<div class="min-w-0">
+								<h1 id="pageTitle" class="text-[15px] font-semibold text-[#fafafa]">Дашборд</h1>
+							</div>
+							<div class="ml-auto flex items-center gap-3">
+								<span id="healthPill" class="inline-flex items-center gap-2 rounded-full border border-[#232327] bg-[#0f0f11] px-3 py-1.5 text-[12px] text-[#9b9ba3]">
+									<span class="h-1.5 w-1.5 rounded-full bg-[#6b6b74]"></span>
+									<span id="healthPillText">Проверка…</span>
+								</span>
+							</div>
+						</header>
+
+						<main class="flex-1 p-5 lg:p-8">
+							<div id="mobileNav" class="mb-5 hidden grid-cols-2 gap-2 lg:hidden"></div>
+							<div id="tabContent"></div>
+						</main>
+					</div>
+				</div>`;
+
+			$('logoutBtn').addEventListener('click', logout);
+			$('mobileMenu').addEventListener('click', toggleMobileNav);
+			document.querySelectorAll('[data-tab]').forEach((btn) => {
+				btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+			});
+			renderMobileNav();
+		}
+
+		function renderMobileNav() {
+			const wrap = $('mobileNav');
+			if (!wrap) return;
+			wrap.innerHTML = NAV.map((n) => `<button class="nav-item ${n.id === currentTab ? 'active' : ''}" data-tab="${n.id}" style="border-color:#1e1e22;">${ICONS[n.icon]}<span>${n.label}</span></button>`).join('');
+			wrap.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+		}
+
+		function toggleMobileNav() {
+			const wrap = $('mobileNav');
+			if (wrap) wrap.classList.toggle('hidden');
+		}
+
+		function escapeHtml(value) {
+			return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+		}
+
+		const PAGE_TITLES = {
+			dashboard: 'Дашборд',
+			badges: 'Бейджи',
+			telegram: 'Кастом Telegram',
+			avatars: 'Формы аватарок',
+			fonts: 'Шрифты',
+			sessions: 'Активные сессии',
+		};
+
+		function switchTab(tab) {
+			currentTab = tab;
+			document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
+			renderMobileNav();
+			const title = $('pageTitle');
+			if (title) title.textContent = PAGE_TITLES[tab] || 'VisionGram';
+			const content = $('tabContent');
+			if (!content) return;
+			content.innerHTML = '<div class="flex items-center justify-center py-20"><span class="spin inline-block h-6 w-6 rounded-full border-2 border-[#232327] border-t-[#fafafa]"></span></div>';
+			const loaders = {
+				dashboard: renderDashboard,
+				badges: renderBadges,
+				telegram: renderTelegram,
+				avatars: renderAvatars,
+				fonts: renderFonts,
+				sessions: renderSessions,
+			};
+			(loaders[tab] || renderDashboard)();
+		}
+
+		// ---------- Dashboard ----------
+
+		const DASH_LOADERS = {
+			dashboard: renderDashboard,
+		};
+
+		async function refreshSystem() {
+			if (!token || currentTab !== 'dashboard') return;
+			try {
+				const data = await api('/api/system');
+				paintSystem(data);
+				setHealthPill(true);
+			} catch (e) { setHealthPill(false); }
+		}
+
+		function setHealthPill(online) {
+			const pill = $('healthPill'); const text = $('healthPillText');
+			if (!pill) return;
+			const dot = pill.querySelector('span');
+			dot.className = 'h-1.5 w-1.5 rounded-full ' + (online ? 'bg-[#34d399]' : 'bg-[#f87171]');
+			text.textContent = online ? 'Сервер online' : 'Сервер offline';
+		}
+
+		function fmtBytes(bytes) {
+			if (bytes == null) return '—';
+			const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+			let i = 0; let v = bytes;
+			while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
+			return v.toFixed(v >= 100 || i === 0 ? 0 : 1) + ' ' + units[i];
+		}
+
+		async function renderDashboard() {
+			const content = $('tabContent');
+			if (!content) return;
+			content.innerHTML = `
+				<div class="fade-in grid gap-5">
+					<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+						${metricCard('ram', 'RAM', 'Оперативная память')}
+						${metricCard('disk', 'Диск', 'Свободное место')}
+						${metricCard('ping', 'Пинг БД', 'Задержка запроса')}
+						${metricCard('uptime', 'Аптайм', 'Время работы')}
+					</div>
+					<div class="grid gap-5 lg:grid-cols-2">
+						<div class="card rounded-2xl p-6">
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Обзор</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]">Мониторинг ресурсов сервера в реальном времени.</p>
+							<div class="mt-5 space-y-4" id="systemBars">
+								<div class="animate-pulse h-3 rounded-full bg-[#17171a]"></div>
+								<div class="animate-pulse h-3 rounded-full bg-[#17171a]"></div>
+							</div>
+						</div>
+						<div class="card rounded-2xl p-6">
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Учётная запись</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]">Единственный аккаунт с полным доступом.</p>
+							<div class="mt-5 grid gap-3 text-[13px]">
+								<div class="flex items-center justify-between rounded-lg bg-[#0b0b0d] border border-[#1e1e22] px-4 py-3">
+									<span class="text-[#9b9ba3]">Логин</span>
+									<span class="font-medium text-[#e4e4e7]">${escapeHtml(user.username)}</span>
+								</div>
+								<div class="flex items-center justify-between rounded-lg bg-[#0b0b0d] border border-[#1e1e22] px-4 py-3">
+									<span class="text-[#9b9ba3]">Роль</span>
+									<span class="font-medium text-[#e4e4e7]">Владелец</span>
+								</div>
+								<div class="flex items-center justify-between rounded-lg bg-[#0b0b0d] border border-[#1e1e22] px-4 py-3">
+									<span class="text-[#9b9ba3]">Регистрация открыта</span>
+									<span class="font-medium text-[#f87171]">Заблокирована</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>`;
+			try {
+				const data = await api('/api/system');
+				paintSystem(data);
+				setHealthPill(true);
+			} catch (e) { setHealthPill(false); }
+		}
+
+		function metricCard(id, label, hint) {
+			return `
+				<div class="card rounded-2xl p-5">
+					<div class="flex items-center justify-between">
+						<span class="text-[13px] font-medium text-[#9b9ba3]">${label}</span>
+						<svg class="h-4 w-4 text-[#55555c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0Z"/></svg>
+					</div>
+					<div id="metric-${id}" class="mt-3 text-2xl font-semibold tracking-tight text-[#fafafa]">—</div>
+					<div class="mt-1 text-[12px] text-[#6b6b74]">${hint}</div>
+				</div>`;
+		}
+
+		function paintSystem(data) {
+			setMetric('ram', data.ram.percent.toFixed(0) + '%', `${fmtBytes(data.ram.used)} / ${fmtBytes(data.ram.total)}`);
+			setMetric('disk', fmtBytes(data.disk.free), `${data.disk.percent}% занято`);
+			setMetric('ping', data.ping.db_ms + ' мс', 'SQLite запрос');
+			setMetric('uptime', fmtUptime(data.uptime), 'с момента запуска');
+
+			const bars = $('systemBars');
+			if (bars) {
+				bars.innerHTML = `
+					${progressBar('Использование RAM', data.ram.percent)}
+					${progressBar('Использование диска', data.disk.percent)}`;
+			}
+		}
+
+		function setMetric(id, value, sub) {
+			const node = $('metric-' + id);
+			if (!node) return;
+			node.textContent = value;
+			node.parentElement.querySelector('div.text-\\[12px\\]').textContent = sub;
+		}
+
+		function progressBar(label, percent) {
+			return `
+				<div>
+					<div class="mb-1.5 flex items-center justify-between text-[12px]">
+						<span class="text-[#9b9ba3]">${label}</span>
+						<span class="font-medium text-[#e4e4e7]">${percent.toFixed(1)}%</span>
+					</div>
+					<div class="h-2 overflow-hidden rounded-full bg-[#1a1a1e]">
+						<div class="h-full rounded-full bg-[#55555c] transition-all duration-500" style="width:${Math.min(100, percent)}%"></div>
+					</div>
+				</div>`;
+		}
+
+		function fmtUptime(seconds) {
+			const d = Math.floor(seconds / 86400);
+			const h = Math.floor((seconds % 86400) / 3600);
+			const m = Math.floor((seconds % 3600) / 60);
+			if (d) return `${d}д ${h}ч`;
+			if (h) return `${h}ч ${m}м`;
+			return `${m}м`;
+		}
+
+		// ---------- Badges ----------
+
+		let badgeList = [];
+		let selectedBadgeId = null;
+
+		async function renderBadges() {
+			const content = $('tabContent');
+			content.innerHTML = `
+				<div class="fade-in grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+					<section class="card rounded-2xl p-6">
+						<div class="mb-5 flex items-center justify-between gap-3">
+							<div>
+								<h3 class="text-[15px] font-semibold text-[#fafafa]">Редактор бейджа</h3>
+								<p class="mt-1 text-[13px] text-[#6b6b74]">Компактные чипсы с иконкой и текстом.</p>
+							</div>
+						</div>
+						<form id="badgeForm" class="grid gap-4" autocomplete="off">
+							<div class="grid gap-4 sm:grid-cols-2">
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Telegram ID</label>
+									<input id="badgeTelegramId" class="field" inputmode="numeric" placeholder="123456789" required>
+								</div>
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Username</label>
+									<input id="badgeUsername" class="field" placeholder="username">
+								</div>
+							</div>
+							<div class="grid gap-4 sm:grid-cols-2">
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Имя</label>
+									<input id="badgeDisplayName" class="field" placeholder="Имя в Telegram">
+								</div>
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Роль</label>
+									<select id="badgeRole" class="field">
+										<option value="owner">Владелец</option>
+										<option value="coder">Разработчик</option>
+										<option value="admin">Администратор</option>
+										<option value="tester">Тестировщик</option>
+									</select>
+								</div>
+							</div>
+							<div class="grid gap-4 sm:grid-cols-2">
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Метка</label>
+									<input id="badgeLabel" class="field" maxlength="16" placeholder="OWNER">
+								</div>
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Цвет</label>
+									<select id="badgeFill" class="field">
+										${Object.keys(MUTED).map((k) => `<option value="${k}">${k}</option>`).join('')}
+									</select>
+								</div>
+							</div>
+							<div class="flex items-center gap-3">
+								<button id="badgeSave" type="submit" class="btn btn-primary">Сохранить</button>
+								<button id="badgeDelete" type="button" class="btn btn-danger" disabled>Удалить</button>
+								<button id="badgeReset" type="button" class="btn btn-ghost">Сброс</button>
+							</div>
+						</form>
+					</section>
+
+					<aside class="card rounded-2xl p-6">
+						<h3 class="text-[15px] font-semibold text-[#fafafa]">Предпросмотр</h3>
+						<p class="mt-1 text-[13px] text-[#6b6b74]">Так чипс будет выглядеть в клиенте.</p>
+						<div class="mt-6 flex min-h-[120px] items-center justify-center rounded-xl border border-dashed border-[#232327] bg-[#0b0b0d] p-6">
+							<span id="badgePreview"></span>
+						</div>
+					</aside>
+				</div>
+
+				<section class="card mt-5 rounded-2xl overflow-hidden">
+					<div class="flex flex-col gap-3 border-b border-[#1e1e22] p-5 sm:flex-row sm:items-center sm:justify-between">
+						<div>
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Бейджи в базе</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]" id="badgeCount">—</p>
+						</div>
+						<div class="relative">
+							<input id="badgeSearch" class="field sm:w-64" placeholder="Поиск по ID, username, имени">
+						</div>
+					</div>
+					<div id="badgeListWrap" class="p-5"></div>
+				</section>`;
+
+			$('badgeForm').addEventListener('submit', saveBadge);
+			$('badgeForm').addEventListener('input', renderBadgePreview);
+			$('badgeRole').addEventListener('change', (e) => {
+				$('badgeLabel').value = e.target.value.toUpperCase();
+				renderBadgePreview();
+			});
+			$('badgeDelete').addEventListener('click', () => selectedBadgeId && removeBadge(selectedBadgeId));
+			$('badgeReset').addEventListener('click', resetBadgeForm);
+			let t; $('badgeSearch').addEventListener('input', () => { clearTimeout(t); t = setTimeout(loadBadges, 300); });
+
+			resetBadgeForm();
+			await loadBadges();
+		}
+
+		function readBadgeForm() {
+			return {
+				telegram_id: Number($('badgeTelegramId').value.trim()),
+				username: $('badgeUsername').value.trim(),
+				display_name: $('badgeDisplayName').value.trim(),
+				role: $('badgeRole').value,
+				label: $('badgeLabel').value.trim(),
+				fill: $('badgeFill').value,
+			};
+		}
+
+		function resetBadgeForm() {
+			selectedBadgeId = null;
+			$('badgeTelegramId').value = '';
+			$('badgeUsername').value = '';
+			$('badgeDisplayName').value = '';
+			$('badgeRole').value = 'owner';
+			$('badgeLabel').value = 'OWNER';
+			$('badgeFill').value = DEFAULT_PALETTE;
+			$('badgeDelete').disabled = true;
+			renderBadgePreview();
+		}
+
+		function fillBadgeForm(badge) {
+			selectedBadgeId = Number(badge.telegram_id);
+			$('badgeTelegramId').value = String(badge.telegram_id ?? '');
+			$('badgeUsername').value = badge.username || '';
+			$('badgeDisplayName').value = badge.display_name || '';
+			$('badgeRole').value = badge.role || 'owner';
+			$('badgeLabel').value = badge.label || (badge.role || 'owner').toUpperCase();
+			$('badgeFill').value = badge.fill || DEFAULT_PALETTE;
+			$('badgeDelete').disabled = false;
+			renderBadgePreview();
+		}
+
+		function badgeChip(badge) {
+			const chip = el('span', 'badge-chip');
+			const pal = MUTED[badge.fill] || MUTED[DEFAULT_PALETTE];
+			chip.style.color = pal.fg;
+			chip.style.background = pal.bg;
+			chip.style.borderColor = pal.border;
+			const icon = badge.icon || badge.role || 'check';
+			const label = document.createElement('span');
+			label.textContent = badge.label || (badge.role || 'owner').toUpperCase();
+			const ic = document.createElement('span');
+			ic.className = 'bi';
+			ic.innerHTML = ROLE_ICONS[icon] || ROLE_ICONS.check;
+			chip.append(ic, label);
 			return chip;
 		}
 
-		function skeletonRows() {
-			badgeBody.replaceChildren();
-			emptyState.classList.add('hidden');
-			for (let index = 0; index < 4; index += 1) {
-				const row = document.createElement('tr');
-				row.className = 'border-b';
-				for (let cellIndex = 0; cellIndex < 5; cellIndex += 1) {
-					const cell = document.createElement('td');
-					const bar = document.createElement('div');
-					bar.className = 'h-4 animate-pulse rounded bg-muted';
-					bar.style.width = cellIndex === 0 ? '110px' : '70%';
-					cell.append(bar);
-					row.append(cell);
-				}
-				badgeBody.append(row);
-			}
+		function renderBadgePreview() {
+			const slot = $('badgePreview');
+			if (!slot) return;
+			slot.replaceChildren();
+			const data = readBadgeForm();
+			const chip = badgeChip({ ...data, icon: data.role });
+			slot.append(chip);
 		}
 
-		function renderTable(badges) {
-			badgeBody.replaceChildren();
-			emptyState.classList.toggle('hidden', badges.length > 0);
-			for (const badge of badges) {
-				const row = document.createElement('tr');
-				row.className = 'border-b transition-colors hover:bg-muted/40';
-
-				const badgeCell = document.createElement('td');
-				badgeCell.append(badgeChip(badge));
-
-				const userCell = document.createElement('td');
-				const name = document.createElement('div');
-				name.className = 'font-medium';
-				name.textContent = badge.display_name || '—';
-				const username = document.createElement('div');
-				username.className = 'mt-0.5 text-xs text-muted-foreground';
-				username.textContent = badge.username ? `@${badge.username}` : '—';
-				userCell.append(name, username);
-
-				const idCell = document.createElement('td');
-				idCell.className = 'font-mono text-xs text-muted-foreground';
-				idCell.textContent = String(badge.telegram_id);
-
-				const roleCell = document.createElement('td');
-				const role = document.createElement('span');
-				role.className = 'inline-flex rounded-full border bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground';
-				role.textContent = ROLE_LABELS[badge.role] || badge.role || '—';
-				roleCell.append(role);
-
-				const actionsCell = document.createElement('td');
-				actionsCell.className = 'text-right';
-				const actions = document.createElement('div');
-				actions.className = 'inline-flex items-center gap-1';
-
-				const edit = document.createElement('button');
-				edit.type = 'button';
-				edit.className = 'btn btn-ghost btn-icon';
-				edit.title = 'Изменить';
-				edit.setAttribute('aria-label', 'Изменить');
-				edit.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>';
-				edit.addEventListener('click', () => fillForm(badge));
-
-				const remove = document.createElement('button');
-				remove.type = 'button';
-				remove.className = 'btn btn-ghost btn-icon text-destructive hover:text-destructive';
-				remove.title = 'Удалить';
-				remove.setAttribute('aria-label', 'Удалить');
-				remove.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
-				remove.addEventListener('click', () => removeBadge(badge.telegram_id));
-
-				actions.append(edit, remove);
-				actionsCell.append(actions);
-				row.append(badgeCell, userCell, idCell, roleCell, actionsCell);
-				badgeBody.append(row);
-			}
-		}
-
-		async function loadBadges({ silent = false } = {}) {
-			if (!silent) {
-				skeletonRows();
-				setStatus('Загрузка бейджей...');
-			}
+		async function loadBadges() {
+			const wrap = $('badgeListWrap'); const count = $('badgeCount');
+			if (!wrap) return;
+			wrap.innerHTML = '<div class="text-[13px] text-[#6b6b74]">Загрузка…</div>';
 			try {
-				const query = search.value.trim();
-				const suffix = query ? `?q=${encodeURIComponent(query)}` : '?limit=500';
-				const data = await apiRequest(`/badges${suffix}`);
-				const badges = Array.isArray(data.badges) ? data.badges : [];
-				renderTable(badges);
-				if (!silent) {
-					setStatus(`Загружено: ${badges.length}`, 'ok');
+				const q = $('badgeSearch').value.trim();
+				const data = await api('/api/badges?limit=500' + (q ? '&q=' + encodeURIComponent(q) : ''));
+				badgeList = data.badges || [];
+				count.textContent = 'Всего: ' + badgeList.length;
+				if (!badgeList.length) {
+					wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#6b6b74]">Бейджей пока нет</div>';
+					return;
 				}
-				setHealth(true);
-			} catch (error) {
-				setStatus(`Не удалось загрузить список: ${error.message}`, 'error');
-				emptyState.classList.remove('hidden');
-				badgeBody.replaceChildren();
-				setHealth(false);
+				wrap.innerHTML = '';
+				for (const badge of badgeList) {
+					const row = el('div', 'flex items-center justify-between gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3 mb-2');
+					const left = el('div', 'flex min-w-0 items-center gap-3');
+					left.append(badgeChip(badge));
+					const meta = el('div', 'min-w-0 leading-tight');
+					const name = el('div', 'truncate text-[13px] font-medium text-[#e4e4e7]', badge.display_name || '—');
+					const id = el('div', 'truncate text-[12px] text-[#6b6b74]', (badge.username ? '@' + badge.username + ' · ' : '') + badge.telegram_id);
+					meta.append(name, id);
+					left.append(meta);
+					const actions = el('div', 'flex items-center gap-1');
+					const editBtn = el('button', 'btn btn-ghost btn-icon', ''); editBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>';
+					editBtn.addEventListener('click', () => { fillBadgeForm(badge); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+					const delBtn = el('button', 'btn btn-ghost btn-icon', ''); delBtn.style.color = '#f87171';
+					delBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>';
+					delBtn.addEventListener('click', () => removeBadge(badge.telegram_id));
+					actions.append(editBtn, delBtn);
+					row.append(left, actions);
+					wrap.append(row);
+				}
+			} catch (e) {
+				wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#f87171]">' + escapeHtml(e.message) + '</div>';
 			}
 		}
 
-		async function saveBadge(event) {
-			event.preventDefault();
-			const data = readForm();
-			if (!Number.isInteger(data.telegram_id) || data.telegram_id <= 0) {
-				toast('Укажите корректный Telegram ID', 'error');
-				return;
-			}
-			const saveBtn = $('saveBtn');
-			saveBtn.disabled = true;
-			$('saveSpinner').classList.remove('hidden');
-			$('saveText').textContent = 'Сохранение...';
-			setStatus('Сохранение бейджа...');
+		async function saveBadge(e) {
+			e.preventDefault();
+			const data = readBadgeForm();
+			if (!Number.isInteger(data.telegram_id) || data.telegram_id <= 0) { toast('Укажите корректный Telegram ID', 'error'); return; }
+			const btn = $('badgeSave'); btn.disabled = true; btn.textContent = 'Сохранение…';
 			try {
-				const payload = {
-					...data,
-					icon: data.icon || null,
-					username: data.username || null,
-					display_name: data.display_name || null,
-					label: data.label || null,
-					text_color: data.text_color || null,
-					title: data.title || null,
-					tagline: data.tagline || null,
-					description: data.description || null,
-				};
-				const result = await apiRequest('/badges/set', {
-					method: 'POST',
-					body: JSON.stringify(payload),
-				});
-				fillForm(result.badge);
-				await loadBadges({ silent: true });
-				setStatus(`Бейдж для ID ${result.badge.telegram_id} сохранён`, 'ok');
+				const payload = { ...data, username: data.username || null, display_name: data.display_name || null, label: data.label || null };
+				await api('/api/badges/set', { method: 'POST', body: JSON.stringify(payload) });
 				toast('Бейдж сохранён');
-				setHealth(true);
-			} catch (error) {
-				setStatus(`Ошибка сохранения: ${error.message}`, 'error');
-				toast(`Ошибка сохранения: ${error.message}`, 'error');
-			} finally {
-				saveBtn.disabled = false;
-				$('saveSpinner').classList.add('hidden');
-				$('saveText').textContent = 'Сохранить бейдж';
-			}
+				await loadBadges();
+			} catch (err) { toast(err.message, 'error'); }
+			finally { btn.disabled = false; btn.textContent = 'Сохранить'; }
 		}
 
 		async function removeBadge(id) {
-			if (!window.confirm(`Удалить бейдж для ID ${id}?`)) {
-				return;
-			}
-			try {
-				await apiRequest(`/badges/${id}`, { method: 'DELETE' });
-				if (selectedId === Number(id)) {
-					resetForm();
-				}
-				await loadBadges({ silent: true });
-				setStatus(`Бейдж для ID ${id} удалён`, 'ok');
-				toast('Бейдж удалён');
-				setHealth(true);
-			} catch (error) {
-				setStatus(`Ошибка удаления: ${error.message}`, 'error');
-				toast(`Ошибка удаления: ${error.message}`, 'error');
-			}
+			if (!confirm('Удалить бейдж для ID ' + id + '?')) return;
+			try { await api('/api/badges/' + id, { method: 'DELETE' }); if (selectedBadgeId === id) resetBadgeForm(); await loadBadges(); toast('Бейдж удалён'); }
+			catch (e) { toast(e.message, 'error'); }
 		}
 
-		async function checkHealth() {
+		// ---------- Telegram customization ----------
+
+		let telegramSettings = null;
+
+		async function renderTelegram() {
+			const content = $('tabContent');
+			content.innerHTML = '<div class="flex items-center justify-center py-20"><span class="spin inline-block h-6 w-6 rounded-full border-2 border-[#232327] border-t-[#fafafa]"></span></div>';
 			try {
-				await apiRequest('/health');
-				setHealth(true);
-			} catch {
-				setHealth(false);
-			}
+				const data = await api('/api/telegram');
+				telegramSettings = data.customization || {};
+			} catch (e) { telegramSettings = {}; toast(e.message, 'error'); return; }
+
+			const c = telegramSettings;
+			const animationStyles = ['slide', 'fade', 'scale', 'pop', 'none'];
+			const sendEffects = ['scale', 'lift', 'fade', 'none'];
+			const viewEffects = ['fade', 'slide', 'none'];
+			const chatListStyles = ['default', 'compact', 'comfortable'];
+			const bubbleStyles = ['rounded', 'pill', 'square'];
+
+			content.innerHTML = `
+				<div class="fade-in grid gap-5">
+					<div class="card rounded-2xl p-6">
+						<div class="mb-5 flex items-center justify-between gap-3">
+							<div>
+								<h3 class="text-[15px] font-semibold text-[#fafafa]">Анимации сообщений</h3>
+								<p class="mt-1 text-[13px] text-[#6b6b74]">Настройки применяются в клиенте VisionGram.</p>
+							</div>
+							<label class="toggle"><input type="checkbox" id="tgAnim" ${c.message_animations ? 'checked' : ''}><span class="track"></span></label>
+						</div>
+						<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+							<div>
+								<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Стиль анимации</label>
+								<select id="tgAnimStyle" class="field">${options(animationStyles, c.animation_style)}</select>
+							</div>
+							<div class="sm:col-span-2 lg:col-span-1">
+								<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Длительность: <span id="tgDurVal" class="text-[#fafafa]">${c.animation_duration} мс</span></label>
+								<input id="tgAnimDur" type="range" min="80" max="600" step="10" value="${c.animation_duration}">
+							</div>
+							<label class="flex cursor-pointer items-center gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3">
+								<span class="text-[13px] text-[#d4d4d8]">Снизить движение</span>
+								<span class="ml-auto toggle"><input type="checkbox" id="tgReduce" ${c.reduce_motion ? 'checked' : ''}><span class="track"></span></span>
+							</label>
+						</div>
+					</div>
+
+					<div class="grid gap-5 md:grid-cols-2">
+						<div class="card rounded-2xl p-6">
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Эффекты отправки / просмотра</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]">Кастомные эффекты для сообщений.</p>
+							<div class="mt-5 grid gap-4">
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Эффект отправки</label>
+									<select id="tgSend" class="field">${options(sendEffects, c.send_effect)}</select>
+								</div>
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Эффект просмотра</label>
+									<select id="tgView" class="field">${options(viewEffects, c.view_effect)}</select>
+								</div>
+								<label class="flex cursor-pointer items-center gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3">
+									<span class="text-[13px] text-[#d4d4d8]">Эффекты реакций</span>
+									<span class="ml-auto toggle"><input type="checkbox" id="tgReactions" ${c.enable_reactions_effects ? 'checked' : ''}><span class="track"></span></span>
+								</label>
+							</div>
+						</div>
+
+						<div class="card rounded-2xl p-6">
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Визуальные твики</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]">Стиль интерфейса чатов.</p>
+							<div class="mt-5 grid gap-4">
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Список чатов</label>
+									<select id="tgChatList" class="field">${options(chatListStyles, c.chat_list_style)}</select>
+								</div>
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Форма пузырей</label>
+									<select id="tgBubble" class="field">${options(bubbleStyles, c.bubble_style)}</select>
+								</div>
+								<label class="flex cursor-pointer items-center gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3">
+									<span class="text-[13px] text-[#d4d4d8]">Компактные интервалы</span>
+									<span class="ml-auto toggle"><input type="checkbox" id="tgCompact" ${c.compact_message_spacing ? 'checked' : ''}><span class="track"></span></span>
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="flex items-center gap-3">
+						<button id="tgSave" class="btn btn-primary">Сохранить настройки</button>
+						<span class="text-[12px] text-[#6b6b74]">Надёжно сохраняется в базе данных.</span>
+					</div>
+				</div>`;
+
+			const dur = $('tgAnimDur');
+			dur.addEventListener('input', () => { $('tgDurVal').textContent = dur.value + ' мс'; });
+			$('tgSave').addEventListener('click', saveTelegram);
 		}
 
-		form.addEventListener('input', (event) => {
-			if (event.target === $('role')) {
-				applyPreset($('role').value);
-				return;
-			}
-			renderPreview();
-		});
+		function options(list, value) {
+			return list.map((v) => `<option value="${v}" ${v === value ? 'selected' : ''}>${v}</option>`).join('');
+		}
 
-		form.addEventListener('submit', saveBadge);
-		deleteBtn.addEventListener('click', () => {
-			if (selectedId !== null) {
-				removeBadge(selectedId);
+		async function saveTelegram() {
+			const payload = {
+				message_animations: $('tgAnim').checked,
+				animation_style: $('tgAnimStyle').value,
+				animation_duration: Number($('tgAnimDur').value),
+				reduce_motion: $('tgReduce').checked,
+				send_effect: $('tgSend').value,
+				view_effect: $('tgView').value,
+				enable_reactions_effects: $('tgReactions').checked,
+				chat_list_style: $('tgChatList').value,
+				bubble_style: $('tgBubble').value,
+				compact_message_spacing: $('tgCompact').checked,
+			};
+			const btn = $('tgSave'); btn.disabled = true; btn.textContent = 'Сохранение…';
+			try { await api('/api/telegram', { method: 'PUT', body: JSON.stringify(payload) }); toast('Настройки сохранены'); }
+			catch (e) { toast(e.message, 'error'); }
+			finally { btn.disabled = false; btn.textContent = 'Сохранить настройки'; }
+		}
+
+		// ---------- Avatar shapes ----------
+
+		let shapeList = [];
+
+		async function renderAvatars() {
+			const content = $('tabContent');
+			content.innerHTML = `
+				<div class="fade-in grid gap-5">
+					<div class="grid gap-5 lg:grid-cols-2">
+						<div class="card rounded-2xl p-6">
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Выбор формы</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]">Синхронизируется у всех пользователей форка.</p>
+							<form id="shapeForm" class="mt-5 grid gap-4" autocomplete="off">
+								<div class="grid gap-4 sm:grid-cols-2">
+									<div>
+										<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Telegram ID</label>
+										<input id="shapeTelegramId" class="field" inputmode="numeric" placeholder="123456789" required>
+									</div>
+									<div>
+										<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Username</label>
+										<input id="shapeUsername" class="field" placeholder="username">
+									</div>
+								</div>
+								<div>
+									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Имя</label>
+									<input id="shapeDisplayName" class="field" placeholder="Имя в Telegram">
+								</div>
+								<button id="shapeSave" type="submit" class="btn btn-primary">Сохранить форму</button>
+							</form>
+						</div>
+						<div class="card rounded-2xl p-6">
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Предпросмотр</h3>
+							<div class="mt-5 flex items-center justify-center">
+								<div id="shapePreviewBox" class="shape-box">
+									<div class="shape-inner" style="border-radius:50%;"></div>
+								</div>
+							</div>
+							<p id="shapePreviewLabel" class="mt-4 text-center text-[13px] text-[#6b6b74]">Circle</p>
+						</div>
+					</div>
+
+					<div class="card rounded-2xl p-6">
+						<h3 class="text-[15px] font-semibold text-[#fafafa]">Формы</h3>
+						<p class="mt-1 text-[13px] text-[#6b6b74]">Нажмите, чтобы выбрать форму.</p>
+						<div id="shapeGrid" class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"></div>
+					</div>
+
+					<section class="card rounded-2xl overflow-hidden">
+						<div class="flex flex-col gap-3 border-b border-[#1e1e22] p-5 sm:flex-row sm:items-center sm:justify-between">
+							<div>
+								<h3 class="text-[15px] font-semibold text-[#fafafa]">Сохранённые формы</h3>
+								<p class="mt-1 text-[13px] text-[#6b6b74]" id="shapeCount">—</p>
+							</div>
+						</div>
+						<div id="shapeListWrap" class="p-5"></div>
+					</section>
+				</div>`;
+
+			let selectedShape = 'circle';
+			const grid = $('shapeGrid');
+			for (const [key, meta] of Object.entries(SHAPES)) {
+				const box = document.createElement('button');
+				box.type = 'button';
+				box.className = 'shape-box cursor-pointer';
+				box.innerHTML = `<div class="shape-inner" style="${meta.css}"></div>`;
+				const label = document.createElement('div');
+				label.className = 'mt-2 text-center text-[11px] text-[#6b6b74]';
+				label.textContent = meta.label;
+				const wrap = document.createElement('div');
+				wrap.append(box, label);
+				box.addEventListener('click', () => { selectedShape = key; updateShapeSelection(key); });
+				wrap.dataset.shape = key;
+				grid.append(wrap);
 			}
-		});
-		$('resetBtn').addEventListener('click', resetForm);
-		$('refreshBtn').addEventListener('click', () => loadBadges());
-		$('saveTokenBtn').addEventListener('click', () => {
-			const value = adminToken.value.trim();
+			function updateShapeSelection(key) {
+				document.querySelectorAll('#shapeGrid [data-shape] .shape-box').forEach((b) => b.classList.remove('active'));
+				const target = document.querySelector('#shapeGrid [data-shape="' + key + '"] .shape-box');
+				if (target) target.classList.add('active');
+				$('shapePreviewLabel').textContent = SHAPES[key].label;
+				$('shapePreviewBox').querySelector('.shape-inner').setAttribute('style', SHAPES[key].css);
+			}
+			updateShapeSelection('circle');
+
+			$('shapeForm').addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const telegram_id = Number($('shapeTelegramId').value.trim());
+				if (!Number.isInteger(telegram_id) || telegram_id <= 0) { toast('Укажите корректный Telegram ID', 'error'); return; }
+				const btn = $('shapeSave'); btn.disabled = true; btn.textContent = 'Сохранение…';
+				try {
+					await api('/api/avatar-shapes/set', { method: 'POST', body: JSON.stringify({ telegram_id, username: $('shapeUsername').value.trim(), display_name: $('shapeDisplayName').value.trim(), shape: selectedShape }) });
+					toast('Форма сохранена');
+					await loadShapes();
+				} catch (err) { toast(err.message, 'error'); }
+				finally { btn.disabled = false; btn.textContent = 'Сохранить форму'; }
+			});
+
+			await loadShapes();
+		}
+
+		async function loadShapes() {
+			const wrap = $('shapeListWrap'); const count = $('shapeCount');
+			if (!wrap) return;
+			wrap.innerHTML = '<div class="text-[13px] text-[#6b6b74]">Загрузка…</div>';
 			try {
-				if (value) {
-					localStorage.setItem(TOKEN_KEY, value);
-					storedToken = value;
-				} else {
-					localStorage.removeItem(TOKEN_KEY);
-					storedToken = null;
+				const data = await api('/api/avatar-shapes?limit=500');
+				shapeList = data.shapes || [];
+				count.textContent = 'Всего: ' + shapeList.length;
+				if (!shapeList.length) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#6b6b74]">Форм пока нет</div>'; return; }
+				wrap.innerHTML = '';
+				for (const s of shapeList) {
+					const row = el('div', 'flex items-center justify-between gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3 mb-2');
+					const left = el('div', 'flex min-w-0 items-center gap-3');
+					const box = el('div', 'flex h-10 w-10 flex-none items-center justify-center rounded-lg border border-[#1e1e22] bg-[#121214]');
+					const inner = el('div', 'h-6 w-6 bg-gradient-to-br from-[#2e2e33] to-[#1a1a1e]');
+					inner.setAttribute('style', (SHAPES[s.shape] || SHAPES.circle).css);
+					box.append(inner);
+					left.append(box);
+					const meta = el('div', 'min-w-0 leading-tight');
+					meta.append(el('div', 'truncate text-[13px] font-medium text-[#e4e4e7]', s.display_name || (s.username ? '@' + s.username : '—')));
+					meta.append(el('div', 'truncate text-[12px] text-[#6b6b74]', (s.username ? '@' + s.username + ' · ' : '') + s.telegram_id));
+					left.append(meta);
+					row.append(left);
+					const delBtn = el('button', 'btn btn-ghost btn-icon', ''); delBtn.style.color = '#f87171';
+					delBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>';
+					delBtn.addEventListener('click', async () => {
+						if (!confirm('Удалить форму для ID ' + s.telegram_id + '?')) return;
+						try { await api('/api/avatar-shapes/' + s.telegram_id, { method: 'DELETE' }); await loadShapes(); toast('Форма удалена'); } catch (e) { toast(e.message, 'error'); }
+					});
+					row.append(delBtn);
+					wrap.append(row);
 				}
-			} catch (error) {}
-			setStatus('Admin token сохранён', 'ok');
-			toast('Admin token сохранён');
-			loadBadges();
-		});
-		search.addEventListener('input', () => {
-			window.clearTimeout(searchTimer);
-			searchTimer = window.setTimeout(() => loadBadges(), 300);
-		});
-		$('themeToggle').addEventListener('click', () => {
-			const dark = !document.documentElement.classList.contains('dark');
-			document.documentElement.classList.toggle('dark', dark);
-			try {
-				localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
-			} catch (error) {}
-		});
+			} catch (e) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#f87171]">' + escapeHtml(e.message) + '</div>'; }
+		}
 
-		adminToken.value = storedToken || '';
-		$('apiBase').textContent = API_BASE;
-		resetForm();
-		checkHealth();
-		loadBadges();
+		// ---------- Fonts ----------
+
+		let fontList = [];
+		let activeFontId = null;
+
+		async function renderFonts() {
+			const content = $('tabContent');
+			content.innerHTML = `
+				<div class="fade-in grid gap-5">
+					<div class="card rounded-2xl p-6">
+						<h3 class="text-[15px] font-semibold text-[#fafafa]">Загрузка шрифта</h3>
+						<p class="mt-1 text-[13px] text-[#6b6b74]">Поддерживаются форматы .ttf и .otf, до 8 МБ.</p>
+						<form id="fontForm" class="mt-5 grid gap-4">
+							<div class="flex items-center justify-center rounded-xl border border-dashed border-[#232327] bg-[#0b0b0d] p-6">
+								<label class="cursor-pointer text-center">
+									<input id="fontFile" type="file" accept=".ttf,.otf" class="hidden">
+									<span id="fontFileLabel" class="text-[13px] text-[#9b9ba3]">Выберите файл .ttf или .otf</span>
+								</label>
+							</div>
+							<button id="fontUpload" type="submit" class="btn btn-primary">Загрузить</button>
+						</form>
+					</div>
+
+					<div class="grid gap-5 lg:grid-cols-2">
+						<div class="card rounded-2xl p-6">
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Live-превью</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]">Шрифт применяется к интерфейсу мгновенно.</p>
+							<div id="fontPreview" class="mt-5 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] p-6" style="font-family: var(--vg-font, Inherit, sans-serif);">
+								<div class="text-2xl font-semibold text-[#fafafa]">The quick brown fox</div>
+								<div class="mt-1 text-[15px] text-[#9b9ba3]">Съешь ещё этих мягких французских булок</div>
+								<div class="mt-3 text-[13px] text-[#6b6b74]">Aa Bb Cc 0123456789</div>
+							</div>
+							<button id="fontDetach" class="btn btn-ghost mt-4" disabled>Сбросить превью</button>
+						</div>
+
+						<div class="card rounded-2xl p-6">
+							<div class="flex items-center justify-between gap-3">
+								<div>
+									<h3 class="text-[15px] font-semibold text-[#fafafa]">Шрифты в базе</h3>
+									<p class="mt-1 text-[13px] text-[#6b6b74]" id="fontCount">—</p>
+								</div>
+								<button id="fontDeactivate" class="btn btn-ghost" hidden>Сбросить активный</button>
+							</div>
+							<div id="fontListWrap" class="mt-4 space-y-2"></div>
+						</div>
+					</div>
+				</div>`;
+
+			$('fontForm').addEventListener('submit', uploadFont);
+			$('fontFile').addEventListener('change', (e) => {
+				const f = e.target.files[0];
+				$('fontFileLabel').textContent = f ? f.name : 'Выберите файл .ttf или .otf';
+			});
+			$('fontDetach').addEventListener('click', () => { setDashboardFont(''); activeFontFace = null; $('fontDetach').disabled = true; });
+			$('fontDeactivate').addEventListener('click', async () => {
+				try { await api('/api/fonts/active', { method: 'DELETE' }); activeFontId = null; setDashboardFont(''); await loadFonts(); toast('Активный шрифт сброшен'); }
+				catch (e) { toast(e.message, 'error'); }
+			});
+			await loadFonts();
+		}
+
+		async function loadFonts() {
+			const wrap = $('fontListWrap'); const count = $('fontCount');
+			if (!wrap) return;
+			try {
+				const data = await api('/api/fonts');
+				fontList = data.fonts || [];
+				activeFontId = data.active_font_id;
+				const deactivateBtn = $('fontDeactivate');
+				if (deactivateBtn) deactivateBtn.hidden = activeFontId == null;
+				count.textContent = 'Всего: ' + fontList.length;
+				if (!fontList.length) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#6b6b74]">Шрифтов пока нет</div>'; return; }
+				wrap.innerHTML = '';
+				for (const font of fontList) {
+					const row = el('div', 'flex items-center justify-between gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3');
+					const left = el('div', 'min-w-0');
+					left.append(el('div', 'truncate text-[13px] font-medium text-[#e4e4e7]', font.name));
+					left.append(el('div', 'text-[12px] text-[#6b6b74]', fmtBytes(font.size) + ' · ' + font.mime.replace('font/', '')));
+					const active = font.id === activeFontId;
+					const actions = el('div', 'flex items-center gap-1');
+					const previewBtn = el('button', 'btn btn-ghost btn-icon', ''); previewBtn.title = 'Предпросмотр';
+					previewBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+					previewBtn.addEventListener('click', () => previewFont(font));
+					const activateBtn = el('button', 'btn ' + (active ? 'btn-primary' : 'btn-ghost'), active ? 'Активен' : 'Активировать');
+					if (!active) activateBtn.addEventListener('click', async () => {
+						try { await api('/api/fonts/' + font.id + '/activate', { method: 'POST' }); activeFontId = font.id; await loadFonts(); applyActiveFont(); toast('Шрифт активирован'); }
+						catch (e) { toast(e.message, 'error'); }
+					});
+					const delBtn = el('button', 'btn btn-ghost btn-icon', ''); delBtn.style.color = '#f87171';
+					delBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>';
+					delBtn.addEventListener('click', async () => {
+						if (!confirm('Удалить шрифт «' + font.name + '»?')) return;
+						try { await api('/api/fonts/' + font.id, { method: 'DELETE' }); if (activeFontId === font.id) { activeFontId = null; setDashboardFont(''); } await loadFonts(); toast('Шрифт удалён'); }
+						catch (e) { toast(e.message, 'error'); }
+					});
+					actions.append(previewBtn, activateBtn, delBtn);
+					row.append(left, actions);
+					wrap.append(row);
+				}
+			} catch (e) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#f87171]">' + escapeHtml(e.message) + '</div>'; }
+		}
+
+		async function uploadFont(e) {
+			e.preventDefault();
+			const input = $('fontFile');
+			const file = input.files[0];
+			if (!file) { toast('Выберите файл', 'error'); return; }
+			const btn = $('fontUpload'); btn.disabled = true; btn.textContent = 'Загрузка…';
+			try {
+				const formData = new FormData();
+				formData.append('file', file);
+				const headers = { Accept: 'application/json' };
+				if (token) headers['Authorization'] = 'Bearer ' + token;
+				const response = await fetch('/api/fonts', { method: 'POST', headers, body: formData });
+				const text = await response.text();
+				let data = {}; try { data = JSON.parse(text); } catch { data = { detail: text }; }
+				if (!response.ok) { const detail = Array.isArray(data.detail) ? data.detail.map((d) => d.msg || JSON.stringify(d)).join('; ') : data.detail; throw new Error(detail || 'HTTP ' + response.status); }
+				toast('Шрифт загружен');
+				input.value = ''; $('fontFileLabel').textContent = 'Выберите файл .ttf или .otf';
+				await loadFonts();
+			} catch (err) { toast(err.message, 'error'); }
+			finally { btn.disabled = false; btn.textContent = 'Загрузить'; }
+		}
+
+		async function previewFont(font) {
+			try {
+				const buffer = await apiRaw('/api/fonts/' + font.id + '/file');
+				const blob = new Blob([buffer], { type: font.mime });
+				const url = URL.createObjectURL(blob);
+				const face = new FontFace(font.name, 'url(' + url + ')');
+				await face.load();
+				document.fonts.add(face);
+				setDashboardFont(`'${font.name}'`);
+				activeFontFace = face;
+				$('fontDetach').disabled = false;
+				toast('Предпросмотр шрифта применён');
+			} catch (e) { toast('Не удалось загрузить шрифт', 'error'); }
+		}
+
+		function setDashboardFont(value) {
+			document.documentElement.style.setProperty('--vg-font', value || '"Inter"');
+			document.body.style.fontFamily = value || '"Inter", ui-sans-serif, system-ui, sans-serif';
+		}
+
+		async function applyActiveFont() {
+			if (activeFontId == null) return;
+			try {
+				const data = await api('/api/fonts');
+				activeFontId = data.active_font_id;
+				const font = (data.fonts || []).find((f) => f.id === activeFontId);
+				if (!font) return;
+				const buffer = await apiRaw('/api/fonts/' + font.id + '/file');
+				const blob = new Blob([buffer], { type: font.mime });
+				const url = URL.createObjectURL(blob);
+				const face = new FontFace(font.name, 'url(' + url + ')');
+				await face.load();
+				document.fonts.add(face);
+				setDashboardFont(`'${font.name}'`);
+			} catch (e) {}
+		}
+
+		// ---------- Sessions ----------
+
+		async function renderSessions() {
+			const content = $('tabContent');
+			content.innerHTML = `
+				<div class="fade-in card rounded-2xl p-6">
+					<div class="mb-5">
+						<h3 class="text-[15px] font-semibold text-[#fafafa]">Активные сессии</h3>
+						<p class="mt-1 text-[13px] text-[#6b6b74]">Мониторинг входов в учётную запись владельца.</p>
+					</div>
+					<div id="sessionsWrap" class="space-y-2"></div>
+				</div>`;
+			await loadSessions();
+		}
+
+		async function loadSessions() {
+			const wrap = $('sessionsWrap');
+			if (!wrap) return;
+			wrap.innerHTML = '<div class="text-[13px] text-[#6b6b74]">Загрузка…</div>';
+			try {
+				const data = await api('/api/sessions');
+				const sessions = data.sessions || [];
+				if (!sessions.length) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#6b6b74]">Нет активных сессий</div>'; return; }
+				wrap.innerHTML = '';
+				for (const s of sessions) {
+					const row = el('div', 'flex items-center justify-between gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3');
+					if (s.current) row.style.borderColor = '#2e2e33';
+					const left = el('div', 'flex min-w-0 items-center gap-3');
+					const dot = el('div', 'flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[#121214] border border-[#232327]');
+					dot.innerHTML = '<span class="h-2 w-2 rounded-full ' + (s.current ? 'bg-[#34d399]' : 'bg-[#55555c]') + '"></span>';
+					left.append(dot);
+					const meta = el('div', 'min-w-0 leading-tight');
+					const titleLine = el('div', 'flex items-center gap-2');
+					titleLine.append(el('span', 'truncate text-[13px] font-medium text-[#e4e4e7]', s.device || 'Unknown'));
+					if (s.current) {
+						const tag = el('span', 'rounded-full bg-[#fafafa]/10 px-2 py-0.5 text-[10px] font-medium text-[#e4e4e7]', 'Текущая');
+						titleLine.append(tag);
+					}
+					meta.append(titleLine);
+					meta.append(el('div', 'truncate text-[12px] text-[#6b6b74]', 'IP ' + (s.ip || '—') + ' · вход ' + formatDate(s.created_at)));
+					left.append(meta);
+					row.append(left);
+					if (!s.current) {
+						const btn = el('button', 'btn btn-danger', 'Завершить');
+						btn.addEventListener('click', () => terminateSession(s.id));
+						row.append(btn);
+					}
+					wrap.append(row);
+				}
+			} catch (e) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#f87171]">' + escapeHtml(e.message) + '</div>'; }
+		}
+
+		async function terminateSession(id) {
+			if (!confirm('Завершить эту сессию?')) return;
+			try { await api('/api/sessions/' + id, { method: 'DELETE' }); toast('Сессия завершена'); await loadSessions(); }
+			catch (e) { toast(e.message, 'error'); }
+		}
+
+		function formatDate(iso) {
+			if (!iso) return '—';
+			try { return new Date(iso.replace(' ', 'T') + 'Z').toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+			catch (e) { return iso; }
+		}
+
+		// ---------- Boot ----------
+
+		if (token) {
+			bootApp();
+		} else {
+			renderLogin();
+		}
 	</script>
 </body>
 </html>
