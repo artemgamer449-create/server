@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>VisionGram Preference</title>
+	<title>VisionPanel</title>
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
@@ -20,9 +20,6 @@
 						mut: '#9b9ba3',
 						dim: '#6b6b74',
 					},
-					fontFamily: {
-						sans: ['var(--vg-font, "Inter")', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'sans-serif'],
-					},
 				},
 			},
 		};
@@ -31,10 +28,9 @@
 		:root { color-scheme: dark; }
 		html, body { background: #060608; }
 		body {
-			font-family: var(--vg-font, "Inter"), ui-sans-serif, system-ui, Segoe UI, sans-serif;
+			font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
 			-webkit-font-smoothing: antialiased;
 			text-rendering: optimizeLegibility;
-			font-feature-settings: "rlig" 1, "calt" 1;
 		}
 		::-webkit-scrollbar { width: 10px; height: 10px; }
 		::-webkit-scrollbar-track { background: transparent; }
@@ -58,8 +54,6 @@
 		}
 		.field:focus { border-color: #3f3f46; box-shadow: 0 0 0 3px rgba(255,255,255,0.04); }
 		.field::placeholder { color: #55555c; }
-		textarea.field { height: auto; padding: 10px 12px; resize: vertical; line-height: 1.5; }
-		select.field { appearance: none; padding-right: 30px; }
 
 		.btn {
 			display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -76,19 +70,6 @@
 		.btn-danger:hover { background: rgba(248,113,113,.1); border-color: rgba(248,113,113,.4); }
 		.btn-icon { width: 38px; padding: 0; }
 
-		.toggle { position: relative; width: 40px; height: 22px; flex: none; cursor: pointer; }
-		.toggle input { opacity: 0; width: 0; height: 0; }
-		.toggle .track {
-			position: absolute; inset: 0; border-radius: 999px; background: #232327;
-			transition: background .18s ease;
-		}
-		.toggle .track::after {
-			content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
-			border-radius: 999px; background: #6b6b74; transition: all .18s ease;
-		}
-		.toggle input:checked + .track { background: #353539; }
-		.toggle input:checked + .track::after { transform: translateX(18px); background: #fafafa; }
-
 		.badge-chip {
 			display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
 			padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600;
@@ -97,17 +78,6 @@
 		}
 		.badge-chip .bi { display: inline-flex; width: 13px; height: 13px; flex: none; }
 		.badge-chip .bi svg { width: 100%; height: 100%; }
-
-		.shape-box {
-			position: relative; display: flex; align-items: center; justify-content: center;
-			width: 72px; height: 72px; border: 2px solid #2e2e33; border-radius: 12px;
-			margin: 0 auto; transition: all .15s ease;
-		}
-		.shape-box .shape-inner {
-			width: 44px; height: 44px; background: linear-gradient(135deg, #2e2e33, #1a1a1e);
-			border: 1px solid #44444b; display: flex; align-items: center; justify-content: center;
-		}
-		.shape-box.active { border-color: #fafafa; }
 
 		.nav-item { display: flex; align-items: center; gap: 11px; width: 100%; padding: 9px 12px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: #9b9ba3; border: 1px solid transparent; transition: all .15s ease; cursor: pointer; }
 		.nav-item:hover { color: #e4e4e7; background: #121214; }
@@ -118,9 +88,6 @@
 		@keyframes spin { to { transform: rotate(360deg); } }
 		.fade-in { animation: fade .2s ease-out; }
 		@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-
-		input[type="range"] { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 999px; background: #232327; outline: none; }
-		input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 999px; background: #fafafa; border: none; cursor: pointer; }
 	</style>
 	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=__turnstileReady" async defer></script>
 </head>
@@ -133,14 +100,12 @@
 
 	<script>
 		const TURNSTILE_SITE_KEY = "0x4AAAAAAFi7N7hnSxXvj04S";
-		const TOKEN_KEY = "visiongram.token";
+		const TOKEN_KEY = "visionpanel.token";
 
 		const ICONS = {
 			dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
 			badges: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M7 12v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4"/><path d="M9 22h6"/></svg>',
-			telegram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>',
-			avatar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg>',
-			fonts: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 10 4"/><path d="M14 20 20 4"/><path d="M7 13h6"/><path d="M15 13h6"/></svg>',
+			accounts: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M17 11v6"/><path d="M14 14h6"/></svg>',
 			sessions: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="16" r="1.6"/></svg>',
 			logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>',
 			menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>',
@@ -168,24 +133,10 @@
 
 		const ROLE_LABELS = { owner: 'Owner', coder: 'Developer', admin: 'Admin', tester: 'Tester' };
 
-		const SHAPES = {
-			circle: { label: 'Circle', css: 'clip-path:circle(50% at 50% 50%);border-radius:0;' },
-			rounded: { label: 'Rounded', css: 'border-radius:32%;' },
-			squircle: { label: 'Squircle', css: 'border-radius:24%;' },
-			square: { label: 'Square', css: 'border-radius:0;' },
-			diamond: { label: 'Diamond', css: 'clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);border-radius:0;' },
-			hexagon: { label: 'Hexagon', css: 'clip-path:polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0 50%);border-radius:0;' },
-			octagon: { label: 'Octagon', css: 'clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);border-radius:0;' },
-			star: { label: 'Star', css: 'clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);border-radius:0;' },
-			leaf: { label: 'Leaf', css: 'border-radius:50% 50% 50% 0;' },
-			none: { label: 'None', css: 'border-radius:0;' },
-		};
-
 		let token = null;
 		let user = null;
 		let currentTab = 'dashboard';
 		let turnstileToken = '';
-		let activeFontFace = null;
 
 		const $ = (id) => document.getElementById(id);
 		const appEl = $('app');
@@ -227,25 +178,11 @@
 			return data;
 		}
 
-		async function apiRaw(path) {
-			const headers = { Accept: '*/*' };
-			if (token) headers['Authorization'] = 'Bearer ' + token;
-			const response = await fetch(path, { headers });
-			if (!response.ok) throw new Error('HTTP ' + response.status);
-			return await response.arrayBuffer();
-		}
-
 		function el(tag, className, text) {
 			const node = document.createElement(tag);
 			if (className) node.className = className;
 			if (text !== undefined) node.textContent = text;
 			return node;
-		}
-
-		function svgIcon(name) {
-			const span = el('span');
-			span.innerHTML = ICONS[name] || '';
-			return span;
 		}
 
 		// ---------- Login ----------
@@ -257,20 +194,20 @@
 					<div class="fade-in w-full max-w-sm">
 						<div class="mb-8 text-center">
 							<div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-[#232327] bg-[#121214]">
-								<span class="text-sm font-bold tracking-[0.2em] text-[#fafafa]">VG</span>
+								<span class="text-sm font-bold tracking-[0.2em] text-[#fafafa]">VP</span>
 							</div>
-							<h1 class="text-xl font-semibold tracking-tight text-[#fafafa]">VisionGram Preference</h1>
+							<h1 class="text-xl font-semibold tracking-tight text-[#fafafa]">VisionPanel</h1>
 							<p class="mt-1.5 text-sm text-[#6b6b74]">Вход в панель управления</p>
 						</div>
 						<div class="card-2 rounded-2xl p-6">
 							<form id="loginForm" class="grid gap-4">
 								<div>
 									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Логин</label>
-									<input id="loginUsername" class="field" autocomplete="username" placeholder="owner" required>
+									<input id="loginUsername" class="field" autocomplete="username" required>
 								</div>
 								<div>
 									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Пароль</label>
-									<input id="loginPassword" type="password" class="field" autocomplete="current-password" placeholder="••••••••" required>
+									<input id="loginPassword" type="password" class="field" autocomplete="current-password" required>
 								</div>
 								<div id="turnstileSlot" class="flex justify-center"></div>
 								<div id="loginError" class="hidden rounded-lg border border-[#3f2024] bg-[#1a0f11] px-3 py-2 text-[13px] text-[#f87171]"></div>
@@ -355,40 +292,40 @@
 			renderShell();
 			switchTab(currentTab);
 			setInterval(refreshSystem, 5000);
-			applyActiveFont();
 		}
 
-		const NAV = [
-			{ id: 'dashboard', label: 'Дашборд', icon: 'dashboard' },
-			{ id: 'badges', label: 'Бейджи', icon: 'badges' },
-			{ id: 'telegram', label: 'Кастом Telegram', icon: 'telegram' },
-			{ id: 'avatars', label: 'Формы аватарок', icon: 'avatar' },
-			{ id: 'fonts', label: 'Шрифты', icon: 'fonts' },
-			{ id: 'sessions', label: 'Сессии', icon: 'sessions' },
-		];
+		function navItems() {
+			const items = [
+				{ id: 'dashboard', label: 'Дашборд', icon: 'dashboard' },
+				{ id: 'badges', label: 'Бейджи', icon: 'badges' },
+			];
+			if (user && user.is_owner) items.push({ id: 'accounts', label: 'Аккаунты', icon: 'accounts' });
+			items.push({ id: 'sessions', label: 'Сессии', icon: 'sessions' });
+			return items;
+		}
 
 		function renderShell() {
+			const items = navItems();
 			appEl.innerHTML = `
 				<div class="mx-auto flex min-h-screen w-full max-w-[1280px] flex-col lg:flex-row">
 					<aside class="hidden w-[240px] shrink-0 border-r border-[#1e1e22] lg:flex lg:flex-col">
 						<div class="flex h-16 items-center gap-3 border-b border-[#1e1e22] px-5">
 							<div class="flex h-9 w-9 items-center justify-center rounded-lg border border-[#232327] bg-[#121214]">
-								<span class="text-xs font-bold tracking-[0.18em] text-[#fafafa]">VG</span>
+								<span class="text-xs font-bold tracking-[0.18em] text-[#fafafa]">VP</span>
 							</div>
 							<div class="leading-tight">
-								<div class="text-sm font-semibold text-[#fafafa]">VisionGram</div>
-								<div class="text-[11px] text-[#6b6b74]">Preference</div>
+								<div class="text-sm font-semibold text-[#fafafa]">VisionPanel</div>
 							</div>
 						</div>
 						<nav class="flex-1 space-y-1 p-3">
-							${NAV.map((n) => `<button class="nav-item" data-tab="${n.id}">${ICONS[n.icon]}<span>${n.label}</span></button>`).join('')}
+							${items.map((n) => `<button class="nav-item" data-tab="${n.id}">${ICONS[n.icon]}<span>${n.label}</span></button>`).join('')}
 						</nav>
 						<div class="border-t border-[#1e1e22] p-3">
 							<div class="mb-3 flex items-center gap-3 px-3">
-								<div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#232327] text-[12px] font-semibold text-[#fafafa]">${(user.username || 'o').slice(0, 1).toUpperCase()}</div>
-								<div class="leading-tight">
-									<div class="text-[13px] font-medium text-[#e4e4e7]">${escapeHtml(user.username)}</div>
-									<div class="text-[11px] text-[#6b6b74]">Владелец</div>
+								<div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#232327] text-[12px] font-semibold text-[#fafafa]">${escapeHtml((user.username || '?').slice(0, 1).toUpperCase())}</div>
+								<div class="leading-tight min-w-0">
+									<div class="text-[13px] font-medium text-[#e4e4e7] truncate">${escapeHtml(user.username)}</div>
+									<div class="text-[11px] text-[#6b6b74]">${user.is_owner ? 'Владелец' : 'Аккаунт'}</div>
 								</div>
 							</div>
 							<button id="logoutBtn" class="nav-item" style="color:#f87171;">${ICONS.logout}<span>Выйти</span></button>
@@ -418,7 +355,7 @@
 
 			$('logoutBtn').addEventListener('click', logout);
 			$('mobileMenu').addEventListener('click', toggleMobileNav);
-			document.querySelectorAll('[data-tab]').forEach((btn) => {
+			document.querySelectorAll('aside [data-tab]').forEach((btn) => {
 				btn.addEventListener('click', () => switchTab(btn.dataset.tab));
 			});
 			renderMobileNav();
@@ -427,7 +364,7 @@
 		function renderMobileNav() {
 			const wrap = $('mobileNav');
 			if (!wrap) return;
-			wrap.innerHTML = NAV.map((n) => `<button class="nav-item ${n.id === currentTab ? 'active' : ''}" data-tab="${n.id}" style="border-color:#1e1e22;">${ICONS[n.icon]}<span>${n.label}</span></button>`).join('');
+			wrap.innerHTML = navItems().map((n) => `<button class="nav-item ${n.id === currentTab ? 'active' : ''}" data-tab="${n.id}" style="border-color:#1e1e22;">${ICONS[n.icon]}<span>${n.label}</span></button>`).join('');
 			wrap.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => switchTab(b.dataset.tab)));
 		}
 
@@ -443,37 +380,30 @@
 		const PAGE_TITLES = {
 			dashboard: 'Дашборд',
 			badges: 'Бейджи',
-			telegram: 'Кастом Telegram',
-			avatars: 'Формы аватарок',
-			fonts: 'Шрифты',
+			accounts: 'Аккаунты',
 			sessions: 'Активные сессии',
 		};
 
 		function switchTab(tab) {
+			if (tab === 'accounts' && !(user && user.is_owner)) tab = 'dashboard';
 			currentTab = tab;
 			document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
 			renderMobileNav();
 			const title = $('pageTitle');
-			if (title) title.textContent = PAGE_TITLES[tab] || 'VisionGram';
+			if (title) title.textContent = PAGE_TITLES[tab] || 'VisionPanel';
 			const content = $('tabContent');
 			if (!content) return;
 			content.innerHTML = '<div class="flex items-center justify-center py-20"><span class="spin inline-block h-6 w-6 rounded-full border-2 border-[#232327] border-t-[#fafafa]"></span></div>';
 			const loaders = {
 				dashboard: renderDashboard,
 				badges: renderBadges,
-				telegram: renderTelegram,
-				avatars: renderAvatars,
-				fonts: renderFonts,
+				accounts: renderAccounts,
 				sessions: renderSessions,
 			};
 			(loaders[tab] || renderDashboard)();
 		}
 
 		// ---------- Dashboard ----------
-
-		const DASH_LOADERS = {
-			dashboard: renderDashboard,
-		};
 
 		async function refreshSystem() {
 			if (!token || currentTab !== 'dashboard') return;
@@ -519,10 +449,11 @@
 								<div class="animate-pulse h-3 rounded-full bg-[#17171a]"></div>
 								<div class="animate-pulse h-3 rounded-full bg-[#17171a]"></div>
 							</div>
+							<div class="mt-5 grid grid-cols-3 gap-3" id="countsRow"></div>
 						</div>
 						<div class="card rounded-2xl p-6">
-							<h3 class="text-[15px] font-semibold text-[#fafafa]">Учётная запись</h3>
-							<p class="mt-1 text-[13px] text-[#6b6b74]">Единственный аккаунт с полным доступом.</p>
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Аккаунт</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]">Текущая сессия панели.</p>
 							<div class="mt-5 grid gap-3 text-[13px]">
 								<div class="flex items-center justify-between rounded-lg bg-[#0b0b0d] border border-[#1e1e22] px-4 py-3">
 									<span class="text-[#9b9ba3]">Логин</span>
@@ -530,11 +461,11 @@
 								</div>
 								<div class="flex items-center justify-between rounded-lg bg-[#0b0b0d] border border-[#1e1e22] px-4 py-3">
 									<span class="text-[#9b9ba3]">Роль</span>
-									<span class="font-medium text-[#e4e4e7]">Владелец</span>
+									<span class="font-medium text-[#e4e4e7]">${user.is_owner ? 'Владелец' : 'Аккаунт'}</span>
 								</div>
 								<div class="flex items-center justify-between rounded-lg bg-[#0b0b0d] border border-[#1e1e22] px-4 py-3">
-									<span class="text-[#9b9ba3]">Регистрация открыта</span>
-									<span class="font-medium text-[#f87171]">Заблокирована</span>
+									<span class="text-[#9b9ba3]">Создан</span>
+									<span class="font-medium text-[#e4e4e7]">${formatDate(user.created_at)}</span>
 								</div>
 							</div>
 						</div>
@@ -571,6 +502,22 @@
 					${progressBar('Использование RAM', data.ram.percent)}
 					${progressBar('Использование диска', data.disk.percent)}`;
 			}
+
+			const counts = $('countsRow');
+			if (counts && data.counts) {
+				counts.innerHTML = `
+					${countTile(data.counts.users, 'Аккаунтов')}
+					${countTile(data.counts.badges, 'Бейджей')}
+					${countTile(data.counts.active_sessions, 'Сессий')}`;
+			}
+		}
+
+		function countTile(value, label) {
+			return `
+				<div class="rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-3 py-3 text-center">
+					<div class="text-xl font-semibold text-[#fafafa]">${value}</div>
+					<div class="mt-0.5 text-[11px] text-[#6b6b74]">${label}</div>
+				</div>`;
 		}
 
 		function setMetric(id, value, sub) {
@@ -818,418 +765,108 @@
 			catch (e) { toast(e.message, 'error'); }
 		}
 
-		// ---------- Telegram customization ----------
+		// ---------- Accounts (owner only) ----------
 
-		let telegramSettings = null;
-
-		async function renderTelegram() {
-			const content = $('tabContent');
-			content.innerHTML = '<div class="flex items-center justify-center py-20"><span class="spin inline-block h-6 w-6 rounded-full border-2 border-[#232327] border-t-[#fafafa]"></span></div>';
-			try {
-				const data = await api('/api/telegram');
-				telegramSettings = data.customization || {};
-			} catch (e) { telegramSettings = {}; toast(e.message, 'error'); return; }
-
-			const c = telegramSettings;
-			const animationStyles = ['slide', 'fade', 'scale', 'pop', 'none'];
-			const sendEffects = ['scale', 'lift', 'fade', 'none'];
-			const viewEffects = ['fade', 'slide', 'none'];
-			const chatListStyles = ['default', 'compact', 'comfortable'];
-			const bubbleStyles = ['rounded', 'pill', 'square'];
-
-			content.innerHTML = `
-				<div class="fade-in grid gap-5">
-					<div class="card rounded-2xl p-6">
-						<div class="mb-5 flex items-center justify-between gap-3">
-							<div>
-								<h3 class="text-[15px] font-semibold text-[#fafafa]">Анимации сообщений</h3>
-								<p class="mt-1 text-[13px] text-[#6b6b74]">Настройки применяются в клиенте VisionGram.</p>
-							</div>
-							<label class="toggle"><input type="checkbox" id="tgAnim" ${c.message_animations ? 'checked' : ''}><span class="track"></span></label>
-						</div>
-						<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-							<div>
-								<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Стиль анимации</label>
-								<select id="tgAnimStyle" class="field">${options(animationStyles, c.animation_style)}</select>
-							</div>
-							<div class="sm:col-span-2 lg:col-span-1">
-								<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Длительность: <span id="tgDurVal" class="text-[#fafafa]">${c.animation_duration} мс</span></label>
-								<input id="tgAnimDur" type="range" min="80" max="600" step="10" value="${c.animation_duration}">
-							</div>
-							<label class="flex cursor-pointer items-center gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3">
-								<span class="text-[13px] text-[#d4d4d8]">Снизить движение</span>
-								<span class="ml-auto toggle"><input type="checkbox" id="tgReduce" ${c.reduce_motion ? 'checked' : ''}><span class="track"></span></span>
-							</label>
-						</div>
-					</div>
-
-					<div class="grid gap-5 md:grid-cols-2">
-						<div class="card rounded-2xl p-6">
-							<h3 class="text-[15px] font-semibold text-[#fafafa]">Эффекты отправки / просмотра</h3>
-							<p class="mt-1 text-[13px] text-[#6b6b74]">Кастомные эффекты для сообщений.</p>
-							<div class="mt-5 grid gap-4">
-								<div>
-									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Эффект отправки</label>
-									<select id="tgSend" class="field">${options(sendEffects, c.send_effect)}</select>
-								</div>
-								<div>
-									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Эффект просмотра</label>
-									<select id="tgView" class="field">${options(viewEffects, c.view_effect)}</select>
-								</div>
-								<label class="flex cursor-pointer items-center gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3">
-									<span class="text-[13px] text-[#d4d4d8]">Эффекты реакций</span>
-									<span class="ml-auto toggle"><input type="checkbox" id="tgReactions" ${c.enable_reactions_effects ? 'checked' : ''}><span class="track"></span></span>
-								</label>
-							</div>
-						</div>
-
-						<div class="card rounded-2xl p-6">
-							<h3 class="text-[15px] font-semibold text-[#fafafa]">Визуальные твики</h3>
-							<p class="mt-1 text-[13px] text-[#6b6b74]">Стиль интерфейса чатов.</p>
-							<div class="mt-5 grid gap-4">
-								<div>
-									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Список чатов</label>
-									<select id="tgChatList" class="field">${options(chatListStyles, c.chat_list_style)}</select>
-								</div>
-								<div>
-									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Форма пузырей</label>
-									<select id="tgBubble" class="field">${options(bubbleStyles, c.bubble_style)}</select>
-								</div>
-								<label class="flex cursor-pointer items-center gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3">
-									<span class="text-[13px] text-[#d4d4d8]">Компактные интервалы</span>
-									<span class="ml-auto toggle"><input type="checkbox" id="tgCompact" ${c.compact_message_spacing ? 'checked' : ''}><span class="track"></span></span>
-								</label>
-							</div>
-						</div>
-					</div>
-
-					<div class="flex items-center gap-3">
-						<button id="tgSave" class="btn btn-primary">Сохранить настройки</button>
-						<span class="text-[12px] text-[#6b6b74]">Надёжно сохраняется в базе данных.</span>
-					</div>
-				</div>`;
-
-			const dur = $('tgAnimDur');
-			dur.addEventListener('input', () => { $('tgDurVal').textContent = dur.value + ' мс'; });
-			$('tgSave').addEventListener('click', saveTelegram);
-		}
-
-		function options(list, value) {
-			return list.map((v) => `<option value="${v}" ${v === value ? 'selected' : ''}>${v}</option>`).join('');
-		}
-
-		async function saveTelegram() {
-			const payload = {
-				message_animations: $('tgAnim').checked,
-				animation_style: $('tgAnimStyle').value,
-				animation_duration: Number($('tgAnimDur').value),
-				reduce_motion: $('tgReduce').checked,
-				send_effect: $('tgSend').value,
-				view_effect: $('tgView').value,
-				enable_reactions_effects: $('tgReactions').checked,
-				chat_list_style: $('tgChatList').value,
-				bubble_style: $('tgBubble').value,
-				compact_message_spacing: $('tgCompact').checked,
-			};
-			const btn = $('tgSave'); btn.disabled = true; btn.textContent = 'Сохранение…';
-			try { await api('/api/telegram', { method: 'PUT', body: JSON.stringify(payload) }); toast('Настройки сохранены'); }
-			catch (e) { toast(e.message, 'error'); }
-			finally { btn.disabled = false; btn.textContent = 'Сохранить настройки'; }
-		}
-
-		// ---------- Avatar shapes ----------
-
-		let shapeList = [];
-
-		async function renderAvatars() {
-			const content = $('tabContent');
-			content.innerHTML = `
-				<div class="fade-in grid gap-5">
-					<div class="grid gap-5 lg:grid-cols-2">
-						<div class="card rounded-2xl p-6">
-							<h3 class="text-[15px] font-semibold text-[#fafafa]">Выбор формы</h3>
-							<p class="mt-1 text-[13px] text-[#6b6b74]">Синхронизируется у всех пользователей форка.</p>
-							<form id="shapeForm" class="mt-5 grid gap-4" autocomplete="off">
-								<div class="grid gap-4 sm:grid-cols-2">
-									<div>
-										<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Telegram ID</label>
-										<input id="shapeTelegramId" class="field" inputmode="numeric" placeholder="123456789" required>
-									</div>
-									<div>
-										<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Username</label>
-										<input id="shapeUsername" class="field" placeholder="username">
-									</div>
-								</div>
-								<div>
-									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Имя</label>
-									<input id="shapeDisplayName" class="field" placeholder="Имя в Telegram">
-								</div>
-								<button id="shapeSave" type="submit" class="btn btn-primary">Сохранить форму</button>
-							</form>
-						</div>
-						<div class="card rounded-2xl p-6">
-							<h3 class="text-[15px] font-semibold text-[#fafafa]">Предпросмотр</h3>
-							<div class="mt-5 flex items-center justify-center">
-								<div id="shapePreviewBox" class="shape-box">
-									<div class="shape-inner" style="border-radius:50%;"></div>
-								</div>
-							</div>
-							<p id="shapePreviewLabel" class="mt-4 text-center text-[13px] text-[#6b6b74]">Circle</p>
-						</div>
-					</div>
-
-					<div class="card rounded-2xl p-6">
-						<h3 class="text-[15px] font-semibold text-[#fafafa]">Формы</h3>
-						<p class="mt-1 text-[13px] text-[#6b6b74]">Нажмите, чтобы выбрать форму.</p>
-						<div id="shapeGrid" class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"></div>
-					</div>
-
-					<section class="card rounded-2xl overflow-hidden">
-						<div class="flex flex-col gap-3 border-b border-[#1e1e22] p-5 sm:flex-row sm:items-center sm:justify-between">
-							<div>
-								<h3 class="text-[15px] font-semibold text-[#fafafa]">Сохранённые формы</h3>
-								<p class="mt-1 text-[13px] text-[#6b6b74]" id="shapeCount">—</p>
-							</div>
-						</div>
-						<div id="shapeListWrap" class="p-5"></div>
-					</section>
-				</div>`;
-
-			let selectedShape = 'circle';
-			const grid = $('shapeGrid');
-			for (const [key, meta] of Object.entries(SHAPES)) {
-				const box = document.createElement('button');
-				box.type = 'button';
-				box.className = 'shape-box cursor-pointer';
-				box.innerHTML = `<div class="shape-inner" style="${meta.css}"></div>`;
-				const label = document.createElement('div');
-				label.className = 'mt-2 text-center text-[11px] text-[#6b6b74]';
-				label.textContent = meta.label;
-				const wrap = document.createElement('div');
-				wrap.append(box, label);
-				box.addEventListener('click', () => { selectedShape = key; updateShapeSelection(key); });
-				wrap.dataset.shape = key;
-				grid.append(wrap);
-			}
-			function updateShapeSelection(key) {
-				document.querySelectorAll('#shapeGrid [data-shape] .shape-box').forEach((b) => b.classList.remove('active'));
-				const target = document.querySelector('#shapeGrid [data-shape="' + key + '"] .shape-box');
-				if (target) target.classList.add('active');
-				$('shapePreviewLabel').textContent = SHAPES[key].label;
-				$('shapePreviewBox').querySelector('.shape-inner').setAttribute('style', SHAPES[key].css);
-			}
-			updateShapeSelection('circle');
-
-			$('shapeForm').addEventListener('submit', async (e) => {
-				e.preventDefault();
-				const telegram_id = Number($('shapeTelegramId').value.trim());
-				if (!Number.isInteger(telegram_id) || telegram_id <= 0) { toast('Укажите корректный Telegram ID', 'error'); return; }
-				const btn = $('shapeSave'); btn.disabled = true; btn.textContent = 'Сохранение…';
-				try {
-					await api('/api/avatar-shapes/set', { method: 'POST', body: JSON.stringify({ telegram_id, username: $('shapeUsername').value.trim(), display_name: $('shapeDisplayName').value.trim(), shape: selectedShape }) });
-					toast('Форма сохранена');
-					await loadShapes();
-				} catch (err) { toast(err.message, 'error'); }
-				finally { btn.disabled = false; btn.textContent = 'Сохранить форму'; }
-			});
-
-			await loadShapes();
-		}
-
-		async function loadShapes() {
-			const wrap = $('shapeListWrap'); const count = $('shapeCount');
-			if (!wrap) return;
-			wrap.innerHTML = '<div class="text-[13px] text-[#6b6b74]">Загрузка…</div>';
-			try {
-				const data = await api('/api/avatar-shapes?limit=500');
-				shapeList = data.shapes || [];
-				count.textContent = 'Всего: ' + shapeList.length;
-				if (!shapeList.length) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#6b6b74]">Форм пока нет</div>'; return; }
-				wrap.innerHTML = '';
-				for (const s of shapeList) {
-					const row = el('div', 'flex items-center justify-between gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3 mb-2');
-					const left = el('div', 'flex min-w-0 items-center gap-3');
-					const box = el('div', 'flex h-10 w-10 flex-none items-center justify-center rounded-lg border border-[#1e1e22] bg-[#121214]');
-					const inner = el('div', 'h-6 w-6 bg-gradient-to-br from-[#2e2e33] to-[#1a1a1e]');
-					inner.setAttribute('style', (SHAPES[s.shape] || SHAPES.circle).css);
-					box.append(inner);
-					left.append(box);
-					const meta = el('div', 'min-w-0 leading-tight');
-					meta.append(el('div', 'truncate text-[13px] font-medium text-[#e4e4e7]', s.display_name || (s.username ? '@' + s.username : '—')));
-					meta.append(el('div', 'truncate text-[12px] text-[#6b6b74]', (s.username ? '@' + s.username + ' · ' : '') + s.telegram_id));
-					left.append(meta);
-					row.append(left);
-					const delBtn = el('button', 'btn btn-ghost btn-icon', ''); delBtn.style.color = '#f87171';
-					delBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>';
-					delBtn.addEventListener('click', async () => {
-						if (!confirm('Удалить форму для ID ' + s.telegram_id + '?')) return;
-						try { await api('/api/avatar-shapes/' + s.telegram_id, { method: 'DELETE' }); await loadShapes(); toast('Форма удалена'); } catch (e) { toast(e.message, 'error'); }
-					});
-					row.append(delBtn);
-					wrap.append(row);
-				}
-			} catch (e) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#f87171]">' + escapeHtml(e.message) + '</div>'; }
-		}
-
-		// ---------- Fonts ----------
-
-		let fontList = [];
-		let activeFontId = null;
-
-		async function renderFonts() {
+		async function renderAccounts() {
 			const content = $('tabContent');
 			content.innerHTML = `
 				<div class="fade-in grid gap-5">
 					<div class="card rounded-2xl p-6">
-						<h3 class="text-[15px] font-semibold text-[#fafafa]">Загрузка шрифта</h3>
-						<p class="mt-1 text-[13px] text-[#6b6b74]">Поддерживаются форматы .ttf и .otf, до 8 МБ.</p>
-						<form id="fontForm" class="mt-5 grid gap-4">
-							<div class="flex items-center justify-center rounded-xl border border-dashed border-[#232327] bg-[#0b0b0d] p-6">
-								<label class="cursor-pointer text-center">
-									<input id="fontFile" type="file" accept=".ttf,.otf" class="hidden">
-									<span id="fontFileLabel" class="text-[13px] text-[#9b9ba3]">Выберите файл .ttf или .otf</span>
-								</label>
+						<h3 class="text-[15px] font-semibold text-[#fafafa]">Создать аккаунт</h3>
+						<p class="mt-1 text-[13px] text-[#6b6b74]">Новый доступ к панели. Пароль передаётся один раз — сохраните его.</p>
+						<form id="accountForm" class="mt-5 grid gap-4 sm:grid-cols-2" autocomplete="off">
+							<div>
+								<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Логин</label>
+								<input id="accountUsername" class="field" placeholder="латиница, цифры, _ и -" required>
 							</div>
-							<button id="fontUpload" type="submit" class="btn btn-primary">Загрузить</button>
+							<div>
+								<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Пароль</label>
+								<div class="flex gap-2">
+									<input id="accountPassword" class="field" placeholder="минимум 8 символов" required>
+									<button id="accountGen" type="button" class="btn btn-ghost btn-icon" title="Сгенерировать">⌁</button>
+								</div>
+							</div>
+							<div class="sm:col-span-2">
+								<button id="accountSave" type="submit" class="btn btn-primary">Создать аккаунт</button>
+							</div>
 						</form>
 					</div>
 
-					<div class="grid gap-5 lg:grid-cols-2">
-						<div class="card rounded-2xl p-6">
-							<h3 class="text-[15px] font-semibold text-[#fafafa]">Live-превью</h3>
-							<p class="mt-1 text-[13px] text-[#6b6b74]">Шрифт применяется к интерфейсу мгновенно.</p>
-							<div id="fontPreview" class="mt-5 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] p-6" style="font-family: var(--vg-font, Inherit, sans-serif);">
-								<div class="text-2xl font-semibold text-[#fafafa]">The quick brown fox</div>
-								<div class="mt-1 text-[15px] text-[#9b9ba3]">Съешь ещё этих мягких французских булок</div>
-								<div class="mt-3 text-[13px] text-[#6b6b74]">Aa Bb Cc 0123456789</div>
-							</div>
-							<button id="fontDetach" class="btn btn-ghost mt-4" disabled>Сбросить превью</button>
+					<section class="card rounded-2xl overflow-hidden">
+						<div class="border-b border-[#1e1e22] p-5">
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">Аккаунты</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]" id="accountCount">—</p>
 						</div>
-
-						<div class="card rounded-2xl p-6">
-							<div class="flex items-center justify-between gap-3">
-								<div>
-									<h3 class="text-[15px] font-semibold text-[#fafafa]">Шрифты в базе</h3>
-									<p class="mt-1 text-[13px] text-[#6b6b74]" id="fontCount">—</p>
-								</div>
-								<button id="fontDeactivate" class="btn btn-ghost" hidden>Сбросить активный</button>
-							</div>
-							<div id="fontListWrap" class="mt-4 space-y-2"></div>
-						</div>
-					</div>
+						<div id="accountListWrap" class="p-5"></div>
+					</section>
 				</div>`;
 
-			$('fontForm').addEventListener('submit', uploadFont);
-			$('fontFile').addEventListener('change', (e) => {
-				const f = e.target.files[0];
-				$('fontFileLabel').textContent = f ? f.name : 'Выберите файл .ttf или .otf';
+			$('accountForm').addEventListener('submit', createAccount);
+			$('accountGen').addEventListener('click', () => {
+				const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+				let out = '';
+				const arr = new Uint32Array(14);
+				crypto.getRandomValues(arr);
+				for (const n of arr) out += chars[n % chars.length];
+				$('accountPassword').value = out;
 			});
-			$('fontDetach').addEventListener('click', () => { setDashboardFont(''); activeFontFace = null; $('fontDetach').disabled = true; });
-			$('fontDeactivate').addEventListener('click', async () => {
-				try { await api('/api/fonts/active', { method: 'DELETE' }); activeFontId = null; setDashboardFont(''); await loadFonts(); toast('Активный шрифт сброшен'); }
-				catch (e) { toast(e.message, 'error'); }
-			});
-			await loadFonts();
+			await loadAccounts();
 		}
 
-		async function loadFonts() {
-			const wrap = $('fontListWrap'); const count = $('fontCount');
+		async function loadAccounts() {
+			const wrap = $('accountListWrap'); const count = $('accountCount');
 			if (!wrap) return;
+			wrap.innerHTML = '<div class="text-[13px] text-[#6b6b74]">Загрузка…</div>';
 			try {
-				const data = await api('/api/fonts');
-				fontList = data.fonts || [];
-				activeFontId = data.active_font_id;
-				const deactivateBtn = $('fontDeactivate');
-				if (deactivateBtn) deactivateBtn.hidden = activeFontId == null;
-				count.textContent = 'Всего: ' + fontList.length;
-				if (!fontList.length) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#6b6b74]">Шрифтов пока нет</div>'; return; }
+				const data = await api('/api/accounts');
+				const accounts = data.accounts || [];
+				count.textContent = 'Всего: ' + accounts.length;
+				if (!accounts.length) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#6b6b74]">Нет аккаунтов</div>'; return; }
 				wrap.innerHTML = '';
-				for (const font of fontList) {
-					const row = el('div', 'flex items-center justify-between gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3');
-					const left = el('div', 'min-w-0');
-					left.append(el('div', 'truncate text-[13px] font-medium text-[#e4e4e7]', font.name));
-					left.append(el('div', 'text-[12px] text-[#6b6b74]', fmtBytes(font.size) + ' · ' + font.mime.replace('font/', '')));
-					const active = font.id === activeFontId;
-					const actions = el('div', 'flex items-center gap-1');
-					const previewBtn = el('button', 'btn btn-ghost btn-icon', ''); previewBtn.title = 'Предпросмотр';
-					previewBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
-					previewBtn.addEventListener('click', () => previewFont(font));
-					const activateBtn = el('button', 'btn ' + (active ? 'btn-primary' : 'btn-ghost'), active ? 'Активен' : 'Активировать');
-					if (!active) activateBtn.addEventListener('click', async () => {
-						try { await api('/api/fonts/' + font.id + '/activate', { method: 'POST' }); activeFontId = font.id; await loadFonts(); applyActiveFont(); toast('Шрифт активирован'); }
-						catch (e) { toast(e.message, 'error'); }
-					});
-					const delBtn = el('button', 'btn btn-ghost btn-icon', ''); delBtn.style.color = '#f87171';
-					delBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>';
-					delBtn.addEventListener('click', async () => {
-						if (!confirm('Удалить шрифт «' + font.name + '»?')) return;
-						try { await api('/api/fonts/' + font.id, { method: 'DELETE' }); if (activeFontId === font.id) { activeFontId = null; setDashboardFont(''); } await loadFonts(); toast('Шрифт удалён'); }
-						catch (e) { toast(e.message, 'error'); }
-					});
-					actions.append(previewBtn, activateBtn, delBtn);
-					row.append(left, actions);
+				for (const a of accounts) {
+					const row = el('div', 'flex items-center justify-between gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3 mb-2');
+					const left = el('div', 'flex min-w-0 items-center gap-3');
+					const avatar = el('div', 'flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[#232327] text-[12px] font-semibold text-[#fafafa]', (a.username || '?').slice(0, 1).toUpperCase());
+					left.append(avatar);
+					const meta = el('div', 'min-w-0 leading-tight');
+					const titleLine = el('div', 'flex items-center gap-2');
+					titleLine.append(el('span', 'truncate text-[13px] font-medium text-[#e4e4e7]', a.username));
+					if (a.is_owner) titleLine.append(el('span', 'rounded-full bg-[#fafafa]/10 px-2 py-0.5 text-[10px] font-medium text-[#e4e4e7]', 'Владелец'));
+					meta.append(titleLine);
+					meta.append(el('div', 'truncate text-[12px] text-[#6b6b74]', 'Создан ' + formatDate(a.created_at)));
+					left.append(meta);
+					row.append(left);
+					if (!a.is_owner) {
+						const btn = el('button', 'btn btn-danger', 'Удалить');
+						btn.addEventListener('click', () => deleteAccount(a));
+						row.append(btn);
+					}
 					wrap.append(row);
 				}
 			} catch (e) { wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#f87171]">' + escapeHtml(e.message) + '</div>'; }
 		}
 
-		async function uploadFont(e) {
+		async function createAccount(e) {
 			e.preventDefault();
-			const input = $('fontFile');
-			const file = input.files[0];
-			if (!file) { toast('Выберите файл', 'error'); return; }
-			const btn = $('fontUpload'); btn.disabled = true; btn.textContent = 'Загрузка…';
+			const username = $('accountUsername').value.trim();
+			const password = $('accountPassword').value;
+			if (username.length < 3) { toast('Логин: минимум 3 символа', 'error'); return; }
+			if (password.length < 8) { toast('Пароль: минимум 8 символов', 'error'); return; }
+			const btn = $('accountSave'); btn.disabled = true; btn.textContent = 'Создание…';
 			try {
-				const formData = new FormData();
-				formData.append('file', file);
-				const headers = { Accept: 'application/json' };
-				if (token) headers['Authorization'] = 'Bearer ' + token;
-				const response = await fetch('/api/fonts', { method: 'POST', headers, body: formData });
-				const text = await response.text();
-				let data = {}; try { data = JSON.parse(text); } catch { data = { detail: text }; }
-				if (!response.ok) { const detail = Array.isArray(data.detail) ? data.detail.map((d) => d.msg || JSON.stringify(d)).join('; ') : data.detail; throw new Error(detail || 'HTTP ' + response.status); }
-				toast('Шрифт загружен');
-				input.value = ''; $('fontFileLabel').textContent = 'Выберите файл .ttf или .otf';
-				await loadFonts();
+				await api('/api/accounts', { method: 'POST', body: JSON.stringify({ username, password }) });
+				toast('Аккаунт создан');
+				$('accountUsername').value = '';
+				$('accountPassword').value = '';
+				await loadAccounts();
 			} catch (err) { toast(err.message, 'error'); }
-			finally { btn.disabled = false; btn.textContent = 'Загрузить'; }
+			finally { btn.disabled = false; btn.textContent = 'Создать аккаунт'; }
 		}
 
-		async function previewFont(font) {
-			try {
-				const buffer = await apiRaw('/api/fonts/' + font.id + '/file');
-				const blob = new Blob([buffer], { type: font.mime });
-				const url = URL.createObjectURL(blob);
-				const face = new FontFace(font.name, 'url(' + url + ')');
-				await face.load();
-				document.fonts.add(face);
-				setDashboardFont(`'${font.name}'`);
-				activeFontFace = face;
-				$('fontDetach').disabled = false;
-				toast('Предпросмотр шрифта применён');
-			} catch (e) { toast('Не удалось загрузить шрифт', 'error'); }
-		}
-
-		function setDashboardFont(value) {
-			document.documentElement.style.setProperty('--vg-font', value || '"Inter"');
-			document.body.style.fontFamily = value || '"Inter", ui-sans-serif, system-ui, sans-serif';
-		}
-
-		async function applyActiveFont() {
-			if (activeFontId == null) return;
-			try {
-				const data = await api('/api/fonts');
-				activeFontId = data.active_font_id;
-				const font = (data.fonts || []).find((f) => f.id === activeFontId);
-				if (!font) return;
-				const buffer = await apiRaw('/api/fonts/' + font.id + '/file');
-				const blob = new Blob([buffer], { type: font.mime });
-				const url = URL.createObjectURL(blob);
-				const face = new FontFace(font.name, 'url(' + url + ')');
-				await face.load();
-				document.fonts.add(face);
-				setDashboardFont(`'${font.name}'`);
-			} catch (e) {}
+		async function deleteAccount(a) {
+			if (!confirm('Удалить аккаунт «' + a.username + '»? Его сессии будут завершены.')) return;
+			try { await api('/api/accounts/' + a.id, { method: 'DELETE' }); toast('Аккаунт удалён'); await loadAccounts(); }
+			catch (e) { toast(e.message, 'error'); }
 		}
 
 		// ---------- Sessions ----------
@@ -1240,7 +877,7 @@
 				<div class="fade-in card rounded-2xl p-6">
 					<div class="mb-5">
 						<h3 class="text-[15px] font-semibold text-[#fafafa]">Активные сессии</h3>
-						<p class="mt-1 text-[13px] text-[#6b6b74]">Мониторинг входов в учётную запись владельца.</p>
+						<p class="mt-1 text-[13px] text-[#6b6b74]">Входы в текущую учётную запись.</p>
 					</div>
 					<div id="sessionsWrap" class="space-y-2"></div>
 				</div>`;

@@ -1,4 +1,3 @@
-import base64
 import hashlib
 import json
 import os
@@ -6,28 +5,33 @@ import secrets
 import shutil
 import time
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import quote
 
 import httpx
 import jwt
 import psutil
-from fastapi import Depends, FastAPI, File, Header, HTTPException, Query, Request, UploadFile
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import Boolean, Column, DateTime, Integer, LargeBinary, String, Text, create_engine, select
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Integer,
+    String,
+    Text,
+    create_engine,
+    func,
+    select,
+)
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.getenv("DB_PATH", str(ROOT / "visiongram.db")))
 DB_DIR = DB_PATH.parent
 PANEL_DIR = Path(os.getenv("PANEL_DIR", str(ROOT / "panel")))
-
-OWNER_USERNAME = os.getenv("OWNER_USERNAME", "owner").strip()
-OWNER_PASSWORD = os.getenv("OWNER_PASSWORD", "chmchm333222111")
 
 TURNSTILE_SECRET = os.getenv(
     "TURNSTILE_SECRET",
@@ -43,22 +47,9 @@ ACCESS_TOKEN_TTL_DAYS = 30
 PBKDF2_ITERATIONS = 240_000
 STARTED_AT = time.time()
 
-MAX_FONT_SIZE = 8 * 1024 * 1024
-ALLOWED_FONT_EXTENSIONS = {".ttf", ".otf"}
-FONT_SIGNATURES = (b"\x00\x01\x00\x00", b"OTTO", b"true", b"ttcf")
+OWNER_USERNAME = os.getenv("OWNER_USERNAME", "owner").strip()
+OWNER_PASSWORD = os.getenv("OWNER_PASSWORD", "chmchm333222111")
 
-AVATAR_SHAPES = [
-    "circle",
-    "rounded",
-    "squircle",
-    "square",
-    "diamond",
-    "hexagon",
-    "octagon",
-    "star",
-    "leaf",
-    "none",
-]
 
 def build_engine():
     DB_DIR.mkdir(parents=True, exist_ok=True)
@@ -66,6 +57,7 @@ def build_engine():
         f"sqlite:///{DB_PATH}",
         connect_args={"check_same_thread": False},
     )
+
 
 engine = build_engine()
 SessionLocal = sessionmaker(
@@ -108,33 +100,6 @@ class Badge(Base):
     updated_at = Column(DateTime, nullable=False)
 
 
-class AvatarShape(Base):
-    __tablename__ = "avatar_shapes"
-    telegram_id = Column(Integer, primary_key=True)
-    username = Column(String, nullable=True)
-    display_name = Column(String, nullable=True)
-    shape = Column(String, nullable=False, default="circle")
-    payload = Column(Text, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
-
-
-class Font(Base):
-    __tablename__ = "fonts"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    mime = Column(String, nullable=False)
-    size = Column(Integer, nullable=False)
-    data = Column(LargeBinary, nullable=False)
-    created_at = Column(DateTime, nullable=False)
-
-
-class Setting(Base):
-    __tablename__ = "settings"
-    key = Column(String, primary_key=True)
-    value = Column(Text, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
-
-
 def utcnow():
     return datetime.now(timezone.utc)
 
@@ -167,6 +132,8 @@ def hash_password(password: str, salt: str) -> str:
 
 def initialize() -> None:
     Base.metadata.create_all(engine)
+    if not OWNER_USERNAME or not OWNER_PASSWORD:
+        return
     with SessionLocal() as db:
         existing = db.execute(
             select(User).where(User.username == OWNER_USERNAME)
@@ -187,7 +154,7 @@ def initialize() -> None:
 initialize()
 
 app = FastAPI(
-    title="VisionGram Preference API",
+    title="VisionPanel API",
     version="1.0.0",
     docs_url=None,
     redoc_url=None,
@@ -323,32 +290,79 @@ async def verify_turnstile(token: str, remote_ip: str | None) -> bool:
         return False
 
 
-def get_setting(db: Session, key: str, default=None):
-    row = db.execute(select(Setting).where(Setting.key == key)).scalar_one_or_none()
-    if row is None:
-        return default
-    try:
-        return json.loads(row.value)
-    except (TypeError, ValueError):
-        return default
-
-
-def set_setting(db: Session, key: str, value) -> None:
-    row = db.execute(select(Setting).where(Setting.key == key)).scalar_one_or_none()
-    encoded = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
-    if row is None:
-        db.add(Setting(key=key, value=encoded, updated_at=utcnow()))
-    else:
-        row.value = encoded
-        row.updated_at = utcnow()
-    db.commit()
+def is_owner(account: User) -> bool:
+    return bool(OWNER_USERNAME) and account.username.strip().lower() == OWNER_USERNAME.strip().lower()
 
 
 def public_user_view(account: User) -> dict:
     return {
+        "id": account.id,
         "username": account.username,
         "created_at": account.created_at.replace(tzinfo=None).isoformat(timespec="seconds"),
+        "is_owner": is_owner(account),
     }
+
+
+def require_owner(user: User = Depends(require_user)) -> User:
+    if not is_owner(user):
+        raise HTTPException(status_code=403, detail="Owner only")
+    return user
+
+
+class AccountCreatePayload(BaseModel):
+    username: str = Field(min_length=3, max_length=32, pattern=r"^[A-Za-z0-9_-]+$")
+    password: str = Field(min_length=8, max_length=256)
+
+
+@app.get("/api/accounts")
+def list_accounts(_: User = Depends(require_owner), db: Session = Depends(get_db)):
+    rows = db.execute(select(User).order_by(User.id)).scalars().all()
+    return {"accounts": [public_user_view(row) for row in rows]}
+
+
+@app.post("/api/accounts")
+def create_account(
+    payload: AccountCreatePayload,
+    _: User = Depends(require_owner),
+    db: Session = Depends(get_db),
+):
+    username = payload.username.strip()
+    existing = db.execute(
+        select(User).where(func.lower(User.username) == username.lower())
+    ).scalar_one_or_none()
+    if existing is not None:
+        raise HTTPException(status_code=409, detail="Username is already taken")
+    salt = secrets.token_hex(16)
+    user = User(
+        username=username,
+        password_hash=hash_password(payload.password, salt),
+        password_salt=salt,
+        created_at=utcnow(),
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"ok": True, "account": public_user_view(user)}
+
+
+@app.delete("/api/accounts/{user_id}")
+def delete_account(
+    user_id: int,
+    owner: User = Depends(require_owner),
+    db: Session = Depends(get_db),
+):
+    row = db.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Account not found")
+    if is_owner(row):
+        raise HTTPException(status_code=400, detail="Cannot delete the owner account")
+    for session_row in db.execute(
+        select(DbSession).where(DbSession.user_id == user_id)
+    ).scalars().all():
+        db.delete(session_row)
+    db.delete(row)
+    db.commit()
+    return {"ok": True, "id": user_id, "by": owner.id}
 
 
 class LoginPayload(BaseModel):
@@ -481,6 +495,7 @@ class SystemHealth(BaseModel):
     ping: dict
     uptime: int
     timestamp: str
+    counts: dict
 
 
 @app.get("/api/system")
@@ -489,8 +504,14 @@ def system_health(user: User = Depends(require_user), db: Session = Depends(get_
     disk = shutil.disk_usage(str(DB_PATH.resolve().anchor or "/"))
     started = time.time()
     with engine.connect() as connection:
-        result = connection.execute(select(Setting).limit(0))
+        connection.execute(select(func.count()).select_from(User))
         db_ping_ms = round((time.time() - started) * 1000, 2)
+    users_count = db.execute(select(func.count()).select_from(User)).scalar_one()
+    sessions_count = db.execute(
+        select(func.count()).select_from(DbSession).where(DbSession.revoked == False)  # noqa: E712
+    ).scalar_one()
+    badges_count = db.execute(select(func.count()).select_from(Badge)).scalar_one()
+    db_size = DB_PATH.stat().st_size if DB_PATH.exists() else 0
     return SystemHealth(
         ram={
             "total": memory.total,
@@ -508,15 +529,13 @@ def system_health(user: User = Depends(require_user), db: Session = Depends(get_
         },
         uptime=int(time.time() - STARTED_AT),
         timestamp=now_iso(),
+        counts={
+            "users": users_count,
+            "active_sessions": sessions_count,
+            "badges": badges_count,
+            "db_size": db_size,
+        },
     )
-
-
-ROLE_LABELS = {
-    "owner": "Owner",
-    "coder": "Developer",
-    "admin": "Admin",
-    "tester": "Tester",
-}
 
 
 class BadgePayload(BaseModel):
@@ -644,264 +663,6 @@ def delete_badge(
     return {"ok": True, "telegram_id": telegram_id}
 
 
-class AvatarShapePayload(BaseModel):
-    telegram_id: int = Field(gt=0)
-    username: str | None = None
-    display_name: str | None = None
-    shape: str = Field(default="circle", min_length=1, max_length=32)
-
-
-@app.get("/api/avatar-shapes")
-def list_avatar_shapes(
-    q: str | None = Query(default=None, max_length=64),
-    limit: int = Query(default=200, ge=1, le=1000),
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    if q:
-        query = q.strip().lstrip("@").lower()
-        rows = db.execute(
-            select(AvatarShape)
-            .where(
-                (AvatarShape.username == query)
-                | (AvatarShape.display_name.like(f"%{q.strip()}%"))
-                | (AvatarShape.telegram_id.cast(String).like(f"%{query}%"))
-            )
-            .order_by(AvatarShape.updated_at.desc())
-            .limit(limit)
-        ).scalars().all()
-    else:
-        rows = db.execute(
-            select(AvatarShape).order_by(AvatarShape.updated_at.desc()).limit(limit)
-        ).scalars().all()
-    return {"shapes": [json.loads(row.payload) for row in rows]}
-
-
-@app.post("/api/avatar-shapes/set")
-def set_avatar_shape(
-    payload: AvatarShapePayload,
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    if payload.shape not in AVATAR_SHAPES:
-        raise HTTPException(status_code=422, detail="Unknown shape")
-    data = {
-        "telegram_id": int(payload.telegram_id),
-        "username": (payload.username or "").strip().lstrip("@").lower() or None,
-        "display_name": (payload.display_name or "").strip() or None,
-        "shape": payload.shape,
-    }
-    updated_at = utcnow()
-    row = db.execute(
-        select(AvatarShape).where(AvatarShape.telegram_id == data["telegram_id"])
-    ).scalar_one_or_none()
-    if row is None:
-        db.add(
-            AvatarShape(
-                telegram_id=data["telegram_id"],
-                username=data["username"],
-                display_name=data["display_name"],
-                shape=data["shape"],
-                payload=json.dumps(data, ensure_ascii=False, separators=(",", ":")),
-                updated_at=updated_at,
-            )
-        )
-    else:
-        row.username = data["username"]
-        row.display_name = data["display_name"]
-        row.shape = data["shape"]
-        row.payload = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
-        row.updated_at = updated_at
-    db.commit()
-    return {"ok": True, "shape": data, "updated_at": now_iso()}
-
-
-@app.delete("/api/avatar-shapes/{telegram_id}")
-def delete_avatar_shape(
-    telegram_id: int,
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    row = db.execute(
-        select(AvatarShape).where(AvatarShape.telegram_id == telegram_id)
-    ).scalar_one_or_none()
-    if row is None:
-        raise HTTPException(status_code=404, detail="Avatar shape not found")
-    db.delete(row)
-    db.commit()
-    return {"ok": True, "telegram_id": telegram_id}
-
-
-class TelegramCustomization(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
-    message_animations: bool = True
-    animation_style: str = "slide"
-    animation_duration: int = 220
-    send_effect: str = "scale"
-    view_effect: str = "fade"
-    reduce_motion: bool = False
-    enable_reactions_effects: bool = True
-    chat_list_style: str = "default"
-    bubble_style: str = "rounded"
-    accent_color: str = "#e4e4e7"
-    compact_message_spacing: bool = False
-
-
-@app.get("/api/telegram")
-def get_telegram_customization(
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    return {
-        "customization": get_setting(
-            db,
-            "telegram.customization",
-            TelegramCustomization().model_dump(),
-        )
-    }
-
-
-@app.put("/api/telegram")
-def put_telegram_customization(
-    payload: TelegramCustomization,
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    value = payload.model_dump(exclude_unset=True)
-    set_setting(db, "telegram.customization", value)
-    return {"ok": True, "customization": value}
-
-
-class FontView(BaseModel):
-    id: int
-    name: str
-    mime: str
-    size: int
-    created_at: str
-
-
-MIME_BY_EXT = {".ttf": "font/ttf", ".otf": "font/otf"}
-
-
-def font_view(font: Font) -> dict:
-    return FontView(
-        id=font.id,
-        name=font.name,
-        mime=font.mime,
-        size=font.size,
-        created_at=font.created_at.replace(tzinfo=None).isoformat(timespec="seconds"),
-    ).model_dump()
-
-
-@app.get("/api/fonts")
-def list_fonts(user: User = Depends(require_user), db: Session = Depends(get_db)):
-    active_font_id = get_setting(db, "active_font_id")
-    rows = db.execute(select(Font).order_by(Font.created_at.desc())).scalars().all()
-    return {
-        "fonts": [font_view(row) for row in rows],
-        "active_font_id": active_font_id,
-    }
-
-
-@app.post("/api/fonts")
-async def upload_font(
-    file: UploadFile = File(...),
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    name = Path(file.filename or "").name.strip()
-    if not name:
-        raise HTTPException(status_code=422, detail="Filename is required")
-    suffix = Path(name).suffix.lower()
-    if suffix not in ALLOWED_FONT_EXTENSIONS:
-        raise HTTPException(status_code=422, detail="Only .ttf and .otf are allowed")
-    data = await file.read()
-    if not data:
-        raise HTTPException(status_code=422, detail="Empty file")
-    if len(data) > MAX_FONT_SIZE:
-        raise HTTPException(status_code=422, detail="File too large (max 8 MB)")
-    if not data.startswith(FONT_SIGNATURES):
-        raise HTTPException(status_code=422, detail="File content is not a valid TTF/OTF font")
-    font = Font(
-        name=name,
-        mime=MIME_BY_EXT[suffix],
-        size=len(data),
-        data=data,
-        created_at=utcnow(),
-    )
-    db.add(font)
-    db.commit()
-    db.refresh(font)
-    return {"ok": True, "font": font_view(font)}
-
-
-def font_file_response(font: Font) -> Response:
-    disposition = f"inline; filename*=UTF-8''{quote(font.name)}"
-    return Response(
-        content=font.data,
-        media_type=font.mime,
-        headers={"Content-Disposition": disposition},
-    )
-
-
-@app.get("/api/fonts/{font_id}/file")
-def get_font_file(
-    font_id: int,
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    font = db.execute(select(Font).where(Font.id == font_id)).scalar_one_or_none()
-    if font is None:
-        raise HTTPException(status_code=404, detail="Font not found")
-    return font_file_response(font)
-
-
-@app.delete("/api/fonts/active")
-def deactivate_font(user: User = Depends(require_user), db: Session = Depends(get_db)):
-    set_setting(db, "active_font_id", None)
-    return {"ok": True, "active_font_id": None}
-
-
-@app.delete("/api/fonts/{font_id}")
-def delete_font(
-    font_id: int,
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    font = db.execute(select(Font).where(Font.id == font_id)).scalar_one_or_none()
-    if font is None:
-        raise HTTPException(status_code=404, detail="Font not found")
-    db.delete(font)
-    if get_setting(db, "active_font_id") == font_id:
-        set_setting(db, "active_font_id", None)
-    db.commit()
-    return {"ok": True, "id": font_id}
-
-
-@app.post("/api/fonts/{font_id}/activate")
-def activate_font(
-    font_id: int,
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    font = db.execute(select(Font).where(Font.id == font_id)).scalar_one_or_none()
-    if font is None:
-        raise HTTPException(status_code=404, detail="Font not found")
-    set_setting(db, "active_font_id", font_id)
-    return {"ok": True, "active_font_id": font_id}
-
-
-@app.get("/api/public/avatar-shape/{telegram_id}")
-def public_avatar_shape(telegram_id: int, db: Session = Depends(get_db)):
-    row = db.execute(
-        select(AvatarShape).where(AvatarShape.telegram_id == telegram_id)
-    ).scalar_one_or_none()
-    if row is None:
-        return {"telegram_id": telegram_id, "shape": "circle"}
-    return json.loads(row.payload)
-
-
 @app.get("/api/public/badge/{telegram_id}")
 def public_badge(telegram_id: int, db: Session = Depends(get_db)):
     row = db.execute(
@@ -918,32 +679,11 @@ def public_badges(db: Session = Depends(get_db)):
     return {"badges": [json.loads(row.payload) for row in rows]}
 
 
-def active_font(db: Session) -> Font | None:
-    font_id = get_setting(db, "active_font_id")
-    if font_id is None:
-        return None
-    return db.execute(select(Font).where(Font.id == font_id)).scalar_one_or_none()
-
-
-@app.get("/api/public/font")
-def public_font(db: Session = Depends(get_db)):
-    font = active_font(db)
-    return {"font": font_view(font) if font else None}
-
-
-@app.get("/api/public/font/file")
-def public_font_file(db: Session = Depends(get_db)):
-    font = active_font(db)
-    if font is None:
-        raise HTTPException(status_code=404, detail="No active font")
-    return font_file_response(font)
-
-
 @app.get("/health")
 def health():
     return {
         "ok": True,
-        "service": "visiongram-preference",
+        "service": "visionpanel",
         "database": str(DB_PATH),
     }
 
@@ -956,7 +696,7 @@ else:
     def index():
         return {
             "ok": True,
-            "service": "visiongram-preference",
+            "service": "visionpanel",
             "panel": "not built",
             "panel_dir": str(PANEL_DIR),
         }
