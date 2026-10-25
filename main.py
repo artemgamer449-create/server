@@ -8,6 +8,13 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Подключаем uvloop для максимальной скорости асинхронности в Uvicorn
+try:
+    import uvloop
+    uvloop.install()
+except ImportError:
+    pass
+
 import httpx
 import jwt
 import psutil
@@ -93,11 +100,11 @@ class DbSession(Base):
 class Badge(Base):
     __tablename__ = "badges"
     telegram_id = Column(Integer, primary_key=True)
-    username = Column(String, nullable=True)
+    username = Column(String, nullable=True, index=True)
     display_name = Column(String, nullable=True)
     role = Column(String, nullable=False)
     payload = Column(Text, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=False, index=True)
 
 
 def utcnow():
@@ -159,6 +166,7 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None,
 )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -166,6 +174,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    return response
 
 
 def get_db():
@@ -578,6 +595,7 @@ def normalize_badge(data: dict) -> dict:
 def list_badges(
     q: str | None = Query(default=None, max_length=64),
     limit: int = Query(default=200, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
     user: User = Depends(require_user),
     db: Session = Depends(get_db),
 ):
@@ -592,10 +610,11 @@ def list_badges(
             )
             .order_by(Badge.updated_at.desc())
             .limit(limit)
+            .offset(offset)
         ).scalars().all()
     else:
         rows = db.execute(
-            select(Badge).order_by(Badge.updated_at.desc()).limit(limit)
+            select(Badge).order_by(Badge.updated_at.desc()).limit(limit).offset(offset)
         ).scalars().all()
     return {"badges": [json.loads(row.payload) for row in rows]}
 
@@ -674,8 +693,14 @@ def public_badge(telegram_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/api/public/badges")
-def public_badges(db: Session = Depends(get_db)):
-    rows = db.execute(select(Badge).order_by(Badge.updated_at.desc())).scalars().all()
+def public_badges(
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+):
+    rows = db.execute(
+        select(Badge).order_by(Badge.updated_at.desc()).limit(limit).offset(offset)
+    ).scalars().all()
     return {"badges": [json.loads(row.payload) for row in rows]}
 
 
@@ -711,4 +736,5 @@ if __name__ == "__main__":
         port=int(os.getenv("PORT", "8000")),
         proxy_headers=True,
         forwarded_allow_ips="*",
+        loop="uvloop",  клик: принудительное включение uvloop
     )
