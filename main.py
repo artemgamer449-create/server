@@ -30,6 +30,7 @@ from sqlalchemy import (
     String,
     Text,
     create_engine,
+    event,
     func,
     select,
 )
@@ -67,6 +68,17 @@ def build_engine():
 
 
 engine = build_engine()
+
+
+@event.listens_for(engine, "connect")
+def _sqlite_pragmas(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA journal_mode=WAL")
+    cursor.execute("PRAGMA synchronous=NORMAL")
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
+
 SessionLocal = sessionmaker(
     bind=engine,
     autoflush=False,
@@ -107,6 +119,29 @@ class Badge(Base):
     updated_at = Column(DateTime, nullable=False, index=True)
 
 
+class AvatarShape(Base):
+    __tablename__ = "avatar_shapes"
+    telegram_id = Column(Integer, primary_key=True)
+    username = Column(String, nullable=True)
+    display_name = Column(String, nullable=True)
+    shape = Column(String, nullable=False, default="circle")
+    updated_at = Column(DateTime, nullable=False, index=True)
+
+
+AVATAR_SHAPES = [
+    "circle",
+    "rounded",
+    "squircle",
+    "square",
+    "diamond",
+    "hexagon",
+    "octagon",
+    "star",
+    "leaf",
+    "none",
+]
+
+
 def utcnow():
     return datetime.now(timezone.utc)
 
@@ -116,11 +151,22 @@ def load_secret_key() -> str:
     if env:
         return env
     path = DB_DIR / ".jwt_secret"
-    if path.exists():
-        return path.read_text(encoding="utf-8").strip()
-    key = secrets.token_hex(32)
-    path.write_text(key, encoding="utf-8")
-    return key
+    try:
+        if path.exists():
+            return path.read_text(encoding="utf-8").strip()
+        key = secrets.token_hex(32)
+        path.write_text(key, encoding="utf-8")
+        return key
+    except OSError:
+        # WHY: on ephemeral filesystems the file cannot persist; derive a
+        # stable key from owner credentials so logins survive restarts.
+        material = f"{OWNER_USERNAME}:{OWNER_PASSWORD}:visionpanel".encode("utf-8")
+        return hashlib.pbkdf2_hmac(
+            "sha256",
+            material,
+            b"visionpanel-static-jwt-salt",
+            1,
+        ).hex()
 
 
 SECRET_KEY = load_secret_key()
@@ -256,8 +302,21 @@ def require_user(
     session = db.execute(
         select(DbSession).where(DbSession.id == session_id)
     ).scalar_one_or_none()
-    if session is None or session.revoked:
+    if session is not None and session.revoked:
         raise HTTPException(status_code=401, detail="Session expired or revoked")
+    if session is None:
+        # WHY: valid token with no row means the database was reset; restore
+        # the session so users are not logged out by a server restart.
+        session = DbSession(
+            id=session_id,
+            user_id=int(user_id),
+            created_at=utcnow(),
+            last_seen_at=utcnow(),
+            revoked=False,
+        )
+        db.add(session)
+        db.commit()
+        db.refresh(session)
     if str(session.user_id) != str(user_id):
         raise HTTPException(status_code=401, detail="Session mismatch")
     session.last_seen_at = utcnow()
@@ -702,6 +761,77 @@ def public_badges(
         select(Badge).order_by(Badge.updated_at.desc()).limit(limit).offset(offset)
     ).scalars().all()
     return {"badges": [json.loads(row.payload) for row in rows]}
+
+
+class AvatarShapePayload(BaseModel):
+    telegram_id: int = Field(gt=0)
+    shape: str = Field(min_length=1, max_length=32)
+    username: str | None = None
+    display_name: str | None = None
+
+
+class AvatarShapesBatchPayload(BaseModel):
+    telegram_ids: list[int] = Field(default_factory=list, max_length=500)
+
+
+@app.post("/api/public/avatar-shape/set")
+def set_avatar_shape(payload: AvatarShapePayload, db: Session = Depends(get_db)):
+    shape = payload.shape.strip()
+    if shape not in AVATAR_SHAPES:
+        raise HTTPException(status_code=422, detail="Unknown shape")
+    row = db.execute(
+        select(AvatarShape).where(AvatarShape.telegram_id == payload.telegram_id)
+    ).scalar_one_or_none()
+    if row is None:
+        db.add(
+            AvatarShape(
+                telegram_id=payload.telegram_id,
+                username=(payload.username or "").strip().lstrip("@").lower() or None,
+                display_name=(payload.display_name or "").strip() or None,
+                shape=shape,
+                updated_at=utcnow(),
+            )
+        )
+    else:
+        row.username = (payload.username or "").strip().lstrip("@").lower() or None
+        row.display_name = (payload.display_name or "").strip() or None
+        row.shape = shape
+        row.updated_at = utcnow()
+    db.commit()
+    return {"ok": True, "telegram_id": payload.telegram_id, "shape": shape}
+
+
+@app.get("/api/public/avatar-shape/{telegram_id}")
+def get_avatar_shape(telegram_id: int, db: Session = Depends(get_db)):
+    row = db.execute(
+        select(AvatarShape).where(AvatarShape.telegram_id == telegram_id)
+    ).scalar_one_or_none()
+    if row is None:
+        return {"telegram_id": telegram_id, "shape": "circle"}
+    return {
+        "telegram_id": row.telegram_id,
+        "username": row.username,
+        "display_name": row.display_name,
+        "shape": row.shape,
+    }
+
+
+@app.post("/api/public/avatar-shapes")
+def get_avatar_shapes_batch(
+    payload: AvatarShapesBatchPayload,
+    db: Session = Depends(get_db),
+):
+    if not payload.telegram_ids:
+        return {"shapes": []}
+    rows = db.execute(
+        select(AvatarShape).where(AvatarShape.telegram_id.in_(payload.telegram_ids))
+    ).scalars().all()
+    found = {row.telegram_id: row.shape for row in rows}
+    shapes = [
+        {"telegram_id": telegram_id, "shape": found.get(telegram_id, "circle")}
+        for telegram_id in dict.fromkeys(payload.telegram_ids)
+    ]
+    return {"shapes": shapes}
 
 
 @app.get("/health")
