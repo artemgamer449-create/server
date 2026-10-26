@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import json
 import os
@@ -50,6 +51,9 @@ TURNSTILE_SITE_KEY = os.getenv(
     "0x4AAAAAAFi7N7hnSxXvj04S",
 ).strip()
 TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+
+KEEPALIVE_URL = os.getenv("KEEPALIVE_URL", "https://sayhost.online/health").strip()
+KEEPALIVE_INTERVAL_SECONDS = int(os.getenv("KEEPALIVE_INTERVAL_SECONDS", "300"))
 
 ACCESS_TOKEN_TTL_DAYS = 30
 PBKDF2_ITERATIONS = 240_000
@@ -109,13 +113,11 @@ class DbSession(Base):
     revoked = Column(Boolean, nullable=False, default=False)
 
 
-class Badge(Base):
-    __tablename__ = "badges"
+class Verified(Base):
+    __tablename__ = "verified"
     telegram_id = Column(Integer, primary_key=True)
     username = Column(String, nullable=True, index=True)
     display_name = Column(String, nullable=True)
-    role = Column(String, nullable=False)
-    payload = Column(Text, nullable=False)
     updated_at = Column(DateTime, nullable=False, index=True)
 
 
@@ -220,6 +222,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+async def start_keepalive():
+    if not KEEPALIVE_URL:
+        return
+
+    async def keepalive_loop():
+        # WHY: periodic self-ping keeps proxies and free tiers from treating
+        # the service as idle, so first responses stay fast.
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            while True:
+                try:
+                    await client.get(KEEPALIVE_URL)
+                except Exception:
+                    pass
+                await asyncio.sleep(KEEPALIVE_INTERVAL_SECONDS)
+
+    asyncio.create_task(keepalive_loop())
 
 
 @app.middleware("http")
@@ -586,7 +607,7 @@ def system_health(user: User = Depends(require_user), db: Session = Depends(get_
     sessions_count = db.execute(
         select(func.count()).select_from(DbSession).where(DbSession.revoked == False)  # noqa: E712
     ).scalar_one()
-    badges_count = db.execute(select(func.count()).select_from(Badge)).scalar_one()
+    badges_count = db.execute(select(func.count()).select_from(Verified)).scalar_one()
     db_size = DB_PATH.stat().st_size if DB_PATH.exists() else 0
     return SystemHealth(
         ram={
@@ -614,153 +635,109 @@ def system_health(user: User = Depends(require_user), db: Session = Depends(get_
     )
 
 
-class BadgePayload(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
+class VerifiedPayload(BaseModel):
     telegram_id: int = Field(gt=0)
     username: str | None = None
     display_name: str | None = None
-    role: str = Field(default="coder", min_length=1, max_length=32)
-    icon: str | None = None
-    label: str | None = None
-    fill: str | None = None
-    outline: str | None = None
-    text_color: str | None = None
-    glow: bool = False
-    title: str | None = None
-    tagline: str | None = None
-    description: str | None = None
-    perks: list[str] = Field(default_factory=list)
 
 
-def normalize_badge(data: dict) -> dict:
-    payload = dict(data)
-    payload["username"] = (payload.get("username") or "").strip().lstrip("@").lower() or None
-    payload["display_name"] = (payload.get("display_name") or "").strip() or None
-    payload["icon"] = (payload.get("icon") or "").strip() or None
-    payload["label"] = (payload.get("label") or "").strip() or None
-    payload["title"] = (payload.get("title") or "").strip() or None
-    payload["tagline"] = (payload.get("tagline") or "").strip() or None
-    payload["description"] = (payload.get("description") or "").strip() or None
-    payload["perks"] = [
-        item.strip()
-        for item in payload.get("perks", [])
-        if isinstance(item, str) and item.strip()
-    ]
-    return payload
+class VerifiedBatchPayload(BaseModel):
+    telegram_ids: list[int] = Field(default_factory=list, max_length=500)
 
 
-@app.get("/api/badges")
-def list_badges(
+def verified_view(row: Verified) -> dict:
+    return {
+        "telegram_id": row.telegram_id,
+        "username": row.username,
+        "display_name": row.display_name,
+        "verified": True,
+        "updated_at": row.updated_at.replace(tzinfo=None).isoformat(timespec="seconds"),
+    }
+
+
+@app.get("/api/verified")
+def list_verified(
     q: str | None = Query(default=None, max_length=64),
     limit: int = Query(default=200, ge=1, le=1000),
     offset: int = Query(default=0, ge=0),
     user: User = Depends(require_user),
     db: Session = Depends(get_db),
 ):
+    statement = select(Verified).order_by(Verified.updated_at.desc())
     if q:
-        query = q.strip().lstrip("@").lower()
-        rows = db.execute(
-            select(Badge)
-            .where(
-                (Badge.username == query)
-                | (Badge.display_name.like(f"%{q.strip()}%"))
-                | (Badge.telegram_id.cast(String).like(f"%{query}%"))
-            )
-            .order_by(Badge.updated_at.desc())
-            .limit(limit)
-            .offset(offset)
-        ).scalars().all()
-    else:
-        rows = db.execute(
-            select(Badge).order_by(Badge.updated_at.desc()).limit(limit).offset(offset)
-        ).scalars().all()
-    return {"badges": [json.loads(row.payload) for row in rows]}
-
-
-@app.get("/api/badges/{telegram_id}")
-def get_badge(
-    telegram_id: int,
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    row = db.execute(
-        select(Badge).where(Badge.telegram_id == telegram_id)
-    ).scalar_one_or_none()
-    if row is None:
-        raise HTTPException(status_code=404, detail="Badge not found")
-    return json.loads(row.payload)
-
-
-@app.post("/api/badges/set")
-def set_badge(
-    payload: BadgePayload,
-    user: User = Depends(require_user),
-    db: Session = Depends(get_db),
-):
-    data = normalize_badge(payload.model_dump(exclude_none=True))
-    telegram_id = int(data["telegram_id"])
-    updated_at = utcnow()
-    row = db.execute(
-        select(Badge).where(Badge.telegram_id == telegram_id)
-    ).scalar_one_or_none()
-    if row is None:
-        db.add(
-            Badge(
-                telegram_id=telegram_id,
-                username=data.get("username"),
-                display_name=data.get("display_name"),
-                role=data.get("role", "coder"),
-                payload=json.dumps(data, ensure_ascii=False, separators=(",", ":")),
-                updated_at=updated_at,
-            )
+        term = q.strip().lstrip("@").lower()
+        statement = statement.where(
+            (Verified.username == term)
+            | (Verified.display_name.like(f"%{q.strip()}%"))
+            | (Verified.telegram_id.cast(String).like(f"%{term}%"))
         )
+    rows = db.execute(statement.limit(limit).offset(offset)).scalars().all()
+    return {"verified": [verified_view(row) for row in rows]}
+
+
+@app.post("/api/verified/set")
+def set_verified(
+    payload: VerifiedPayload,
+    user: User = Depends(require_user),
+    db: Session = Depends(get_db),
+):
+    row = db.execute(
+        select(Verified).where(Verified.telegram_id == payload.telegram_id)
+    ).scalar_one_or_none()
+    if row is None:
+        row = Verified(
+            telegram_id=payload.telegram_id,
+            username=(payload.username or "").strip().lstrip("@").lower() or None,
+            display_name=(payload.display_name or "").strip() or None,
+            updated_at=utcnow(),
+        )
+        db.add(row)
     else:
-        row.username = data.get("username")
-        row.display_name = data.get("display_name")
-        row.role = data.get("role", "coder")
-        row.payload = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
-        row.updated_at = updated_at
+        row.username = (payload.username or "").strip().lstrip("@").lower() or None
+        row.display_name = (payload.display_name or "").strip() or None
+        row.updated_at = utcnow()
     db.commit()
-    return {"ok": True, "badge": data, "updated_at": now_iso()}
+    return {"ok": True, "verified": verified_view(row)}
 
 
-@app.delete("/api/badges/{telegram_id}")
-def delete_badge(
+@app.delete("/api/verified/{telegram_id}")
+def revoke_verified(
     telegram_id: int,
     user: User = Depends(require_user),
     db: Session = Depends(get_db),
 ):
     row = db.execute(
-        select(Badge).where(Badge.telegram_id == telegram_id)
+        select(Verified).where(Verified.telegram_id == telegram_id)
     ).scalar_one_or_none()
     if row is None:
-        raise HTTPException(status_code=404, detail="Badge not found")
+        raise HTTPException(status_code=404, detail="Not verified")
     db.delete(row)
     db.commit()
     return {"ok": True, "telegram_id": telegram_id}
 
 
-@app.get("/api/public/badge/{telegram_id}")
-def public_badge(telegram_id: int, db: Session = Depends(get_db)):
+@app.get("/api/public/verified/{telegram_id}")
+def public_verified(telegram_id: int, db: Session = Depends(get_db)):
     row = db.execute(
-        select(Badge).where(Badge.telegram_id == telegram_id)
+        select(Verified).where(Verified.telegram_id == telegram_id)
     ).scalar_one_or_none()
-    if row is None:
-        raise HTTPException(status_code=404, detail="Badge not found")
-    return json.loads(row.payload)
+    return {
+        "telegram_id": telegram_id,
+        "verified": row is not None,
+    }
 
 
-@app.get("/api/public/badges")
-def public_badges(
-    limit: int = Query(default=100, ge=1, le=500),
-    offset: int = Query(default=0, ge=0),
+@app.post("/api/public/verified")
+def public_verified_batch(
+    payload: VerifiedBatchPayload,
     db: Session = Depends(get_db),
 ):
+    if not payload.telegram_ids:
+        return {"verified": []}
     rows = db.execute(
-        select(Badge).order_by(Badge.updated_at.desc()).limit(limit).offset(offset)
+        select(Verified.telegram_id).where(Verified.telegram_id.in_(payload.telegram_ids))
     ).scalars().all()
-    return {"badges": [json.loads(row.payload) for row in rows]}
+    return {"verified": list(dict.fromkeys(rows))}
 
 
 class AvatarShapePayload(BaseModel):
@@ -867,4 +844,4 @@ if __name__ == "__main__":
         proxy_headers=True,
         forwarded_allow_ips="*",
         loop="uvloop",
-    )
+    )

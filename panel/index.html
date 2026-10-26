@@ -70,14 +70,13 @@
 		.btn-danger:hover { background: rgba(248,113,113,.1); border-color: rgba(248,113,113,.4); }
 		.btn-icon { width: 38px; padding: 0; }
 
-		.badge-chip {
+		.verified-chip {
 			display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
-			padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600;
-			letter-spacing: .06em; line-height: 1; text-transform: uppercase; white-space: nowrap;
-			border: 1px solid transparent;
+			padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+			line-height: 1; white-space: nowrap;
+			background: rgba(51,144,236,.12); border: 1px solid rgba(51,144,236,.35); color: #6eb4f4;
 		}
-		.badge-chip .bi { display: inline-flex; width: 13px; height: 13px; flex: none; }
-		.badge-chip .bi svg { width: 100%; height: 100%; }
+		.verified-chip svg { width: 14px; height: 14px; flex: none; }
 
 		.nav-item { display: flex; align-items: center; gap: 11px; width: 100%; padding: 9px 12px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: #9b9ba3; border: 1px solid transparent; transition: all .15s ease; cursor: pointer; }
 		.nav-item:hover { color: #e4e4e7; background: #121214; }
@@ -104,34 +103,12 @@
 
 		const ICONS = {
 			dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
-			badges: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M7 12v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4"/><path d="M9 22h6"/></svg>',
+			verified: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6 14.4 5l3.4-.4 1 3.2 2.8 1.9-1.4 3.1 1.4 3.1-2.8 1.9-1 3.2-3.4-.4L12 23l-2.4-2.4-3.4.4-1-3.2-2.8-1.9 1.4-3.1-1.4-3.1 2.8-1.9 1-3.2 3.4.4Z"/><path d="m8.8 12.2 2.2 2.2 4.4-4.4"/></svg>',
 			accounts: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M17 11v6"/><path d="M14 14h6"/></svg>',
 			sessions: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="16" r="1.6"/></svg>',
 			logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>',
 			menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>',
 		};
-
-		const ROLE_ICONS = {
-			owner: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4 4 5-7 5 7 4-4v11H3V7z"/><path d="M3 21h18"/></svg>',
-			coder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 9-4 3 4 3"/><path d="m16 9 4 3-4 3"/><path d="m14 5-4 14"/></svg>',
-			admin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-			tester: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v5l-5 10a3 3 0 0 0 2.7 4.3h8.6A3 3 0 0 0 19 18L14 8V3"/><path d="M8 14h8"/></svg>',
-			check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>',
-		};
-
-		const MUTED = {
-			'neon-blue': { fg: '#7dd3fc', bg: 'rgba(56,189,248,.10)', border: 'rgba(56,189,248,.28)' },
-			violet: { fg: '#c4b5fd', bg: 'rgba(139,92,246,.10)', border: 'rgba(139,92,246,.28)' },
-			gold: { fg: '#fcd34d', bg: 'rgba(245,158,11,.10)', border: 'rgba(245,158,11,.28)' },
-			fire: { fg: '#fca5a5', bg: 'rgba(239,68,68,.10)', border: 'rgba(239,68,68,.28)' },
-			emerald: { fg: '#6ee7b7', bg: 'rgba(16,185,129,.10)', border: 'rgba(16,185,129,.28)' },
-			pink: { fg: '#f9a8d4', bg: 'rgba(236,72,153,.10)', border: 'rgba(236,72,153,.28)' },
-			platinum: { fg: '#e5e7eb', bg: 'rgba(148,163,184,.10)', border: 'rgba(148,163,184,.28)' },
-			teal: { fg: '#5eead4', bg: 'rgba(20,184,166,.12)', border: 'rgba(20,184,166,.28)' },
-		};
-		const DEFAULT_PALETTE = 'violet';
-
-		const ROLE_LABELS = { owner: 'Owner', coder: 'Developer', admin: 'Admin', tester: 'Tester' };
 
 		let token = null;
 		let user = null;
@@ -297,7 +274,7 @@
 		function navItems() {
 			const items = [
 				{ id: 'dashboard', label: 'Дашборд', icon: 'dashboard' },
-				{ id: 'badges', label: 'Бейджи', icon: 'badges' },
+				{ id: 'verified', label: 'Галочка', icon: 'verified' },
 			];
 			if (user && user.is_owner) items.push({ id: 'accounts', label: 'Аккаунты', icon: 'accounts' });
 			items.push({ id: 'sessions', label: 'Сессии', icon: 'sessions' });
@@ -379,7 +356,7 @@
 
 		const PAGE_TITLES = {
 			dashboard: 'Дашборд',
-			badges: 'Бейджи',
+			verified: 'Галочка верификации',
 			accounts: 'Аккаунты',
 			sessions: 'Активные сессии',
 		};
@@ -396,7 +373,7 @@
 			content.innerHTML = '<div class="flex items-center justify-center py-20"><span class="spin inline-block h-6 w-6 rounded-full border-2 border-[#232327] border-t-[#fafafa]"></span></div>';
 			const loaders = {
 				dashboard: renderDashboard,
-				badges: renderBadges,
+				verified: renderVerified,
 				accounts: renderAccounts,
 				sessions: renderSessions,
 			};
@@ -507,7 +484,7 @@
 			if (counts && data.counts) {
 				counts.innerHTML = `
 					${countTile(data.counts.users, 'Аккаунтов')}
-					${countTile(data.counts.badges, 'Бейджей')}
+					${countTile(data.counts.badges, 'Галочек')}
 					${countTile(data.counts.active_sessions, 'Сессий')}`;
 			}
 		}
@@ -549,73 +526,53 @@
 			return `${m}м`;
 		}
 
-		// ---------- Badges ----------
+		const VERIFIED_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 1.7 14.7 4.4 18.5 4 19.6 7.6 22.8 9.7 21.2 13.2 22.8 16.7 19.6 18.8 18.5 22.4 14.7 22 12 23.5 9.3 22 5.5 22.4 4.4 18.8 1.2 16.7 2.8 13.2 1.2 9.7 4.4 7.6 5.5 4 9.3 4.4Z" fill="#3390ec"/><path d="m7.6 12.4 3 3 5.8-5.8" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-		let badgeList = [];
-		let selectedBadgeId = null;
+		function verifiedChip() {
+			const chip = el('span', 'verified-chip');
+			chip.innerHTML = VERIFIED_SVG;
+			return chip;
+		}
 
-		async function renderBadges() {
+		// ---------- Verified ----------
+
+		let verifiedList = [];
+
+		async function renderVerified() {
 			const content = $('tabContent');
 			content.innerHTML = `
 				<div class="fade-in grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
 					<section class="card rounded-2xl p-6">
-						<div class="mb-5 flex items-center justify-between gap-3">
-							<div>
-								<h3 class="text-[15px] font-semibold text-[#fafafa]">Редактор бейджа</h3>
-								<p class="mt-1 text-[13px] text-[#6b6b74]">Компактные чипсы с иконкой и текстом.</p>
-							</div>
-						</div>
-						<form id="badgeForm" class="grid gap-4" autocomplete="off">
+						<h3 class="text-[15px] font-semibold text-[#fafafa]">Выдать галочку</h3>
+						<p class="mt-1 text-[13px] text-[#6b6b74]">Галочка видна всем пользователям VisionGram рядом с ником.</p>
+						<form id="verifiedForm" class="mt-5 grid gap-4" autocomplete="off">
 							<div class="grid gap-4 sm:grid-cols-2">
 								<div>
 									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Telegram ID</label>
-									<input id="badgeTelegramId" class="field" inputmode="numeric" placeholder="123456789" required>
+									<input id="verifiedTelegramId" class="field" inputmode="numeric" placeholder="123456789" required>
 								</div>
 								<div>
 									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Username</label>
-									<input id="badgeUsername" class="field" placeholder="username">
+									<input id="verifiedUsername" class="field" placeholder="username">
 								</div>
 							</div>
-							<div class="grid gap-4 sm:grid-cols-2">
-								<div>
-									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Имя</label>
-									<input id="badgeDisplayName" class="field" placeholder="Имя в Telegram">
-								</div>
-								<div>
-									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Роль</label>
-									<select id="badgeRole" class="field">
-										<option value="owner">Владелец</option>
-										<option value="coder">Разработчик</option>
-										<option value="admin">Администратор</option>
-										<option value="tester">Тестировщик</option>
-									</select>
-								</div>
-							</div>
-							<div class="grid gap-4 sm:grid-cols-2">
-								<div>
-									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Метка</label>
-									<input id="badgeLabel" class="field" maxlength="16" placeholder="OWNER">
-								</div>
-								<div>
-									<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Цвет</label>
-									<select id="badgeFill" class="field">
-										${Object.keys(MUTED).map((k) => `<option value="${k}">${k}</option>`).join('')}
-									</select>
-								</div>
+							<div>
+								<label class="mb-1.5 block text-[13px] font-medium text-[#d4d4d8]">Имя</label>
+								<input id="verifiedDisplayName" class="field" placeholder="Имя в Telegram">
 							</div>
 							<div class="flex items-center gap-3">
-								<button id="badgeSave" type="submit" class="btn btn-primary">Сохранить</button>
-								<button id="badgeDelete" type="button" class="btn btn-danger" disabled>Удалить</button>
-								<button id="badgeReset" type="button" class="btn btn-ghost">Сброс</button>
+								<button id="verifiedSave" type="submit" class="btn btn-primary">Выдать галочку</button>
+								<span class="text-[12px] text-[#6b6b74]">Повторная выдача обновляет данные.</span>
 							</div>
 						</form>
 					</section>
 
 					<aside class="card rounded-2xl p-6">
-						<h3 class="text-[15px] font-semibold text-[#fafafa]">Предпросмотр</h3>
-						<p class="mt-1 text-[13px] text-[#6b6b74]">Так чипс будет выглядеть в клиенте.</p>
-						<div class="mt-6 flex min-h-[120px] items-center justify-center rounded-xl border border-dashed border-[#232327] bg-[#0b0b0d] p-6">
-							<span id="badgePreview"></span>
+						<h3 class="text-[15px] font-semibold text-[#fafafa]">Как выглядит</h3>
+						<p class="mt-1 text-[13px] text-[#6b6b74]">Наведение на галочку в клиенте показывает подпись.</p>
+						<div class="mt-6 flex min-h-[120px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-[#232327] bg-[#0b0b0d] p-6">
+							<span class="verified-chip">${VERIFIED_SVG}<span>Подтверждено</span></span>
+							<span class="text-[12px] text-[#6b6b74]">Подтверждено официальной организацией VisionGram</span>
 						</div>
 					</aside>
 				</div>
@@ -623,120 +580,49 @@
 				<section class="card mt-5 rounded-2xl overflow-hidden">
 					<div class="flex flex-col gap-3 border-b border-[#1e1e22] p-5 sm:flex-row sm:items-center sm:justify-between">
 						<div>
-							<h3 class="text-[15px] font-semibold text-[#fafafa]">Бейджи в базе</h3>
-							<p class="mt-1 text-[13px] text-[#6b6b74]" id="badgeCount">—</p>
+							<h3 class="text-[15px] font-semibold text-[#fafafa]">С верификацией</h3>
+							<p class="mt-1 text-[13px] text-[#6b6b74]" id="verifiedCount">—</p>
 						</div>
 						<div class="relative">
-							<input id="badgeSearch" class="field sm:w-64" placeholder="Поиск по ID, username, имени">
+							<input id="verifiedSearch" class="field sm:w-64" placeholder="Поиск по ID, username, имени">
 						</div>
 					</div>
-					<div id="badgeListWrap" class="p-5"></div>
+					<div id="verifiedListWrap" class="p-5"></div>
 				</section>`;
 
-			$('badgeForm').addEventListener('submit', saveBadge);
-			$('badgeForm').addEventListener('input', renderBadgePreview);
-			$('badgeRole').addEventListener('change', (e) => {
-				$('badgeLabel').value = e.target.value.toUpperCase();
-				renderBadgePreview();
-			});
-			$('badgeDelete').addEventListener('click', () => selectedBadgeId && removeBadge(selectedBadgeId));
-			$('badgeReset').addEventListener('click', resetBadgeForm);
-			let t; $('badgeSearch').addEventListener('input', () => { clearTimeout(t); t = setTimeout(loadBadges, 300); });
+			$('verifiedForm').addEventListener('submit', grantVerified);
+			let t; $('verifiedSearch').addEventListener('input', () => { clearTimeout(t); t = setTimeout(loadVerified, 300); });
 
-			resetBadgeForm();
-			await loadBadges();
+			await loadVerified();
 		}
 
-		function readBadgeForm() {
-			return {
-				telegram_id: Number($('badgeTelegramId').value.trim()),
-				username: $('badgeUsername').value.trim(),
-				display_name: $('badgeDisplayName').value.trim(),
-				role: $('badgeRole').value,
-				label: $('badgeLabel').value.trim(),
-				fill: $('badgeFill').value,
-			};
-		}
-
-		function resetBadgeForm() {
-			selectedBadgeId = null;
-			$('badgeTelegramId').value = '';
-			$('badgeUsername').value = '';
-			$('badgeDisplayName').value = '';
-			$('badgeRole').value = 'owner';
-			$('badgeLabel').value = 'OWNER';
-			$('badgeFill').value = DEFAULT_PALETTE;
-			$('badgeDelete').disabled = true;
-			renderBadgePreview();
-		}
-
-		function fillBadgeForm(badge) {
-			selectedBadgeId = Number(badge.telegram_id);
-			$('badgeTelegramId').value = String(badge.telegram_id ?? '');
-			$('badgeUsername').value = badge.username || '';
-			$('badgeDisplayName').value = badge.display_name || '';
-			$('badgeRole').value = badge.role || 'owner';
-			$('badgeLabel').value = badge.label || (badge.role || 'owner').toUpperCase();
-			$('badgeFill').value = badge.fill || DEFAULT_PALETTE;
-			$('badgeDelete').disabled = false;
-			renderBadgePreview();
-		}
-
-		function badgeChip(badge) {
-			const chip = el('span', 'badge-chip');
-			const pal = MUTED[badge.fill] || MUTED[DEFAULT_PALETTE];
-			chip.style.color = pal.fg;
-			chip.style.background = pal.bg;
-			chip.style.borderColor = pal.border;
-			const icon = badge.icon || badge.role || 'check';
-			const label = document.createElement('span');
-			label.textContent = badge.label || (badge.role || 'owner').toUpperCase();
-			const ic = document.createElement('span');
-			ic.className = 'bi';
-			ic.innerHTML = ROLE_ICONS[icon] || ROLE_ICONS.check;
-			chip.append(ic, label);
-			return chip;
-		}
-
-		function renderBadgePreview() {
-			const slot = $('badgePreview');
-			if (!slot) return;
-			slot.replaceChildren();
-			const data = readBadgeForm();
-			const chip = badgeChip({ ...data, icon: data.role });
-			slot.append(chip);
-		}
-
-		async function loadBadges() {
-			const wrap = $('badgeListWrap'); const count = $('badgeCount');
+		async function loadVerified() {
+			const wrap = $('verifiedListWrap'); const count = $('verifiedCount');
 			if (!wrap) return;
 			wrap.innerHTML = '<div class="text-[13px] text-[#6b6b74]">Загрузка…</div>';
 			try {
-				const q = $('badgeSearch').value.trim();
-				const data = await api('/api/badges?limit=500' + (q ? '&q=' + encodeURIComponent(q) : ''));
-				badgeList = data.badges || [];
-				count.textContent = 'Всего: ' + badgeList.length;
-				if (!badgeList.length) {
-					wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#6b6b74]">Бейджей пока нет</div>';
+				const q = $('verifiedSearch').value.trim();
+				const data = await api('/api/verified?limit=500' + (q ? '&q=' + encodeURIComponent(q) : ''));
+				verifiedList = data.verified || [];
+				count.textContent = 'Всего: ' + verifiedList.length;
+				if (!verifiedList.length) {
+					wrap.innerHTML = '<div class="py-8 text-center text-[13px] text-[#6b6b74]">Никого с галочкой пока нет</div>';
 					return;
 				}
 				wrap.innerHTML = '';
-				for (const badge of badgeList) {
+				for (const item of verifiedList) {
 					const row = el('div', 'flex items-center justify-between gap-3 rounded-xl border border-[#1e1e22] bg-[#0b0b0d] px-4 py-3 mb-2');
 					const left = el('div', 'flex min-w-0 items-center gap-3');
-					left.append(badgeChip(badge));
+					left.append(verifiedChip());
 					const meta = el('div', 'min-w-0 leading-tight');
-					const name = el('div', 'truncate text-[13px] font-medium text-[#e4e4e7]', badge.display_name || '—');
-					const id = el('div', 'truncate text-[12px] text-[#6b6b74]', (badge.username ? '@' + badge.username + ' · ' : '') + badge.telegram_id);
+					const name = el('div', 'truncate text-[13px] font-medium text-[#e4e4e7]', item.display_name || '—');
+					const id = el('div', 'truncate text-[12px] text-[#6b6b74]', (item.username ? '@' + item.username + ' · ' : '') + item.telegram_id);
 					meta.append(name, id);
 					left.append(meta);
 					const actions = el('div', 'flex items-center gap-1');
-					const editBtn = el('button', 'btn btn-ghost btn-icon', ''); editBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>';
-					editBtn.addEventListener('click', () => { fillBadgeForm(badge); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-					const delBtn = el('button', 'btn btn-ghost btn-icon', ''); delBtn.style.color = '#f87171';
-					delBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>';
-					delBtn.addEventListener('click', () => removeBadge(badge.telegram_id));
-					actions.append(editBtn, delBtn);
+					const revokeBtn = el('button', 'btn btn-danger', 'Забрать');
+					revokeBtn.addEventListener('click', () => revokeVerified(item.telegram_id));
+					actions.append(revokeBtn);
 					row.append(left, actions);
 					wrap.append(row);
 				}
@@ -745,23 +631,29 @@
 			}
 		}
 
-		async function saveBadge(e) {
+		async function grantVerified(e) {
 			e.preventDefault();
-			const data = readBadgeForm();
-			if (!Number.isInteger(data.telegram_id) || data.telegram_id <= 0) { toast('Укажите корректный Telegram ID', 'error'); return; }
-			const btn = $('badgeSave'); btn.disabled = true; btn.textContent = 'Сохранение…';
+			const telegramId = Number($('verifiedTelegramId').value.trim());
+			if (!Number.isInteger(telegramId) || telegramId <= 0) { toast('Укажите корректный Telegram ID', 'error'); return; }
+			const btn = $('verifiedSave'); btn.disabled = true; btn.textContent = 'Сохранение…';
 			try {
-				const payload = { ...data, username: data.username || null, display_name: data.display_name || null, label: data.label || null };
-				await api('/api/badges/set', { method: 'POST', body: JSON.stringify(payload) });
-				toast('Бейдж сохранён');
-				await loadBadges();
+				await api('/api/verified/set', {
+					method: 'POST',
+					body: JSON.stringify({
+						telegram_id: telegramId,
+						username: $('verifiedUsername').value.trim() || null,
+						display_name: $('verifiedDisplayName').value.trim() || null,
+					}),
+				});
+				toast('Галочка выдана');
+				await loadVerified();
 			} catch (err) { toast(err.message, 'error'); }
-			finally { btn.disabled = false; btn.textContent = 'Сохранить'; }
+			finally { btn.disabled = false; btn.textContent = 'Выдать галочку'; }
 		}
 
-		async function removeBadge(id) {
-			if (!confirm('Удалить бейдж для ID ' + id + '?')) return;
-			try { await api('/api/badges/' + id, { method: 'DELETE' }); if (selectedBadgeId === id) resetBadgeForm(); await loadBadges(); toast('Бейдж удалён'); }
+		async function revokeVerified(id) {
+			if (!confirm('Забрать галочку у ID ' + id + '?')) return;
+			try { await api('/api/verified/' + id, { method: 'DELETE' }); await loadVerified(); toast('Галочка отозвана'); }
 			catch (e) { toast(e.message, 'error'); }
 		}
 
